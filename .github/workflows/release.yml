@@ -1,0 +1,56 @@
+# Publishes a FloppaOS release that iso.yml made as a draft (iso/README.md "Releases", step 4).
+# Started by hand (Actions -> release -> Run workflow) after the image has been tested.
+#
+# Checks first, and stops if anything is off:
+#   - docs/releases/<version>.md exists (the release notes) and VERSION says <version>
+#   - floppaos.pages.dev/download/ serves the image and its .sha256, and that checksum is the one in the draft
+#   - the release sources-<version> has its SOURCES-INDEX.tsv and no FAILED.txt (the source code offer)
+# Then it writes the notes into the draft v<version> and publishes it (a pre-release while the version says
+# "preview").
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release version to publish, e.g. 0.1.0-preview'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      REL: ${{ inputs.release }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Checks
+        run: |
+          set -euo pipefail
+          [[ ${REL} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${REL}"; exit 1; }
+          [ "${REL}" = "$(cat VERSION)" ] || { echo "VERSION says $(cat VERSION), not ${REL}"; exit 1; }
+          notes="docs/releases/${REL}.md"
+          [ -s "${notes}" ] || { echo "Missing ${notes}"; exit 1; }
+          name="floppaos-${REL}-x86_64.iso"
+          url="https://floppaos.pages.dev/download/${name}"
+          curl -fsSI "${url}" | tee /tmp/head.txt
+          grep -qi '^content-type: application/x-iso9660-image' /tmp/head.txt
+          served=$(curl -fsS "${url}.sha256" | cut -d' ' -f1)
+          gh release download "v${REL}" --repo "${GITHUB_REPOSITORY}" --pattern "${name}.sha256" --dir /tmp/draft
+          drafted=$(cut -d' ' -f1 "/tmp/draft/${name}.sha256")
+          [ -n "${served}" ] && [ "${served}" = "${drafted}" ] || { echo "Checksum on the website (${served}) differs from the draft (${drafted})"; exit 1; }
+          grep -q "${served}" "${notes}" || { echo "The notes do not name the checksum ${served}"; exit 1; }
+          assets=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/sources-${REL}" -q '[.assets[].name] | join(" ")')
+          [[ " ${assets} " == *" SOURCES-INDEX.tsv "* ]] || { echo "sources-${REL} has no SOURCES-INDEX.tsv yet"; exit 1; }
+          [[ " ${assets} " != *" FAILED.txt "* ]] || { echo "sources-${REL} lists failed packages (FAILED.txt)"; exit 1; }
+          echo "All checks passed: ${name}, sha256 ${served}"
+      - name: Publish
+        run: |
+          set -euo pipefail
+          pre=false; [[ ${REL} == *-* ]] && pre=true
+          gh release edit "v${REL}" --repo "${GITHUB_REPOSITORY}" --notes-file "docs/releases/${REL}.md" \
+            --title "FloppaOS ${REL}" --prerelease="${pre}" --draft=false
+          echo "Published https://github.com/${GITHUB_REPOSITORY}/releases/tag/v${REL}" >> "${GITHUB_STEP_SUMMARY}"
