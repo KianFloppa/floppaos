@@ -1,0 +1,20 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "FloppaOS"
+            }
+        ],
+        "Category": "Plasma Look And Feel",
+        "Description": "FloppaOS: Windows-style taskbar and pure-black colours",
+        "Id": "org.floppaos.desktop",
+        "License": "GPL-3.0-or-later",
+        "Name": "FloppaOS",
+        "Version": "0.1",
+        "Website": "https://github.com/KianFloppa/floppaos",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ]
+    },
+    "KPackageStructure": "Plasma/LookAndFeel"
+}

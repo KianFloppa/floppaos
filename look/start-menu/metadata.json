@@ -1,0 +1,32 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Authors": [
+      {
+        "Name": "FloppaOS (port to Plasma's own popup, defaults)"
+      },
+      {
+        "Email": "hello@eisteed.com",
+        "Name": "Eisteed (Menu 11)"
+      },
+      {
+        "Name": "kurojs (Menu 11 Enhanced)"
+      },
+      {
+        "Email": "hein@kde.org",
+        "Name": "Eike Hein (Kicker, the code it grew from)"
+      }
+    ],
+    "Category": "Application Launchers",
+    "Description": "Start menu: search, pinned apps, all apps and recent documents",
+    "EnabledByDefault": true,
+    "Icon": "floppaos",
+    "Id": "org.floppaos.startmenu",
+    "License": "GPL-2.0+",
+    "Name": "FloppaOS Start",
+    "Version": "0.1.0",
+    "Website": "https://github.com/kurojs/Menu-11-Enhanced"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-Provides": ["org.kde.plasma.launchermenu"]
+}

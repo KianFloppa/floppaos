@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Floppa Setup
+Comment=Check and set up the Floppa Launcher, the games and FloppaNet
+Exec=floppa-setup --first-run
+Icon=floppaos
+Terminal=false
+Categories=Game;Settings;

@@ -1,0 +1,5 @@
+# FloppaOS live user only: never lock the screen by itself. Installing takes a while, and FloppaOS's pure
+# black lock screen would look like a frozen computer. (Keys: /usr/share/config.kcfg/kscreenlockersettings.kcfg)
+[Daemon]
+Autolock=false
+LockOnResume=false

@@ -1,0 +1,43 @@
+# FloppaOS installer branding (Calamares 3.4). Images are rendered from installer/art/*.svg.
+# Logo: the FloppaOS caracal head (look/assets/floppaos-start.svg).
+---
+componentName:  floppaos
+
+welcomeStyleCalamares:   false
+welcomeExpandingLogo:    true
+windowExpanding:    normal
+windowSize: 900px,620px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+
+strings:
+    productName:         "FloppaOS"
+    shortProductName:    "FloppaOS"
+    version:             "2026.11"
+    shortVersion:        "2026.11"
+    versionedName:       "FloppaOS 2026.11"
+    shortVersionedName:  "FloppaOS 2026.11"
+    bootloaderEntryName: "FloppaOS"
+    productUrl:          "https://github.com/KianFloppa/floppaos"
+    supportUrl:          "https://github.com/KianFloppa/floppaos/issues"
+    knownIssuesUrl:      "https://github.com/KianFloppa/floppaos/issues"
+    releaseNotesUrl:     "https://github.com/KianFloppa/floppaos"
+    donateUrl:           ""
+
+images:
+    productIcon:         "logo.png"
+    productLogo:         "logo.png"
+    productWelcome:      "welcome.png"
+
+# Pure black sidebar (OLED), the logo's orange for the current step.
+style:
+   SidebarBackground:        "#000000"
+   SidebarText:              "#FFFFFF"
+   SidebarTextCurrent:       "#000000"
+   SidebarBackgroundCurrent: "#F58220"
+
+slideshow:               "show.qml"
+slideshowAPI: 2
+
+# No "upload log" button: Calamares' default sends logs to a public paste service.

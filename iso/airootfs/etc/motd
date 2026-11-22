@@ -1,0 +1,6 @@
+Welcome to the FloppaOS live system (based on Arch Linux).
+
+This is the text console. The desktop starts by itself; if it doesn't, run: sudo systemctl start plasmalogin
+Network: Wi-Fi and cable are handled by NetworkManager (nmtui for a text menu).
+Project and help: https://github.com/KianFloppa/floppaos
+

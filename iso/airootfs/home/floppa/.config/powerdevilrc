@@ -1,0 +1,15 @@
+# FloppaOS live user only: keep the screen on and never sleep while the live system runs (e.g. during the
+# install). Plasma 6 power settings, group [<power state>][Display] / [SuspendAndShutdown].
+[AC][Display]
+DimDisplayWhenIdle=false
+TurnOffDisplayWhenIdle=false
+
+[AC][SuspendAndShutdown]
+AutoSuspendAction=0
+
+[Battery][Display]
+DimDisplayWhenIdle=false
+TurnOffDisplayWhenIdle=false
+
+[Battery][SuspendAndShutdown]
+AutoSuspendAction=0

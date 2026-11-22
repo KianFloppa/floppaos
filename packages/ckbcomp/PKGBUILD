@@ -1,0 +1,19 @@
+# FloppaOS: ckbcomp, from Debian's console-setup. The installer's keyboard page uses it to draw the keyboard
+# picture (Calamares logs "ckbcomp not found, keyboard preview disabled" without it), so the user can see
+# where keys like y and z are before typing a password. Same source as the AUR package "ckbcomp" 1.249-1.
+# Reviewed 2026-11-21: one Perl script; the only programs it runs are `cat` on its own temporary files.
+pkgname=ckbcomp
+pkgver=1.249
+pkgrel=1
+pkgdesc="Compile an XKB keyboard description to a console keymap (from Debian's console-setup)"
+arch=('any')
+url="https://salsa.debian.org/installer-team/console-setup"
+license=('GPL-2.0-or-later')
+depends=('perl' 'xkeyboard-config')
+source=("console-setup-${pkgver}.tar.gz::${url}/-/archive/${pkgver}/console-setup-${pkgver}.tar.gz")
+# Same value as the AUR package; checked against the downloaded file 2026-11-21.
+sha256sums=('15570cf19f6251da4c7e0a25745da7b8a7ab27092484ba166039d5da2b06c093')
+
+package() {
+  install -Dm755 "console-setup-${pkgver}/Keyboard/ckbcomp" "${pkgdir}/usr/bin/ckbcomp"
+}

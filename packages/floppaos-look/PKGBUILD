@@ -1,0 +1,32 @@
+# FloppaOS: the look as a system package: the FloppaOS Plasma global theme (defaults + taskbar layout),
+# the FloppaOS start menu widget and the pure-black colour scheme. Each user switches to it with `floppaos-look` and back with
+# `floppaos-look-remove`. Making it the default for new users is the job of a later package (ISO only).
+pkgname=floppaos-look
+pkgver=0.11
+pkgrel=1
+pkgdesc="FloppaOS look for KDE Plasma 6: global theme with a Windows-style taskbar and pure-black colours"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later' 'GPL-2.0-or-later' 'LGPL-2.0-or-later')  # start menu: GPL-2.0+, colours: LGPL-2.0+ (Breeze Dark)
+depends=('bash' 'kconfig' 'glib2' 'plasma-workspace' 'plasma-desktop' 'plasma5support' 'kwin' 'qt6-tools' 'floppaos-common' 'floppaos-theme-parts')
+
+package() {
+  local root="${startdir}/../.."
+  install -d "${pkgdir}/usr/share/plasma/look-and-feel"
+  cp -r "${root}/look/global-theme/org.floppaos.desktop" "${pkgdir}/usr/share/plasma/look-and-feel/"
+  # FloppaOS Start, the Windows 11 style start menu (look/start-menu)
+  install -d "${pkgdir}/usr/share/plasma/plasmoids/org.floppaos.startmenu"
+  cp -r "${root}/look/start-menu/metadata.json" "${root}/look/start-menu/contents" \
+    "${pkgdir}/usr/share/plasma/plasmoids/org.floppaos.startmenu/"
+  install -Dm644 "${root}/look/color-schemes/FloppaOSBlack.colors" "${pkgdir}/usr/share/color-schemes/FloppaOSBlack.colors"
+  for f in apply.sh apply-extras.sh uninstall.sh; do
+    install -Dm755 "${root}/look/${f}" "${pkgdir}/usr/share/floppaos/look/${f}"
+  done
+  install -Dm644 "${root}/CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"
+  install -d "${pkgdir}/usr/bin"
+  printf '#!/bin/sh\nexec bash /usr/share/floppaos/look/apply.sh "$@"\n'     > "${pkgdir}/usr/bin/floppaos-look"
+  printf '#!/bin/sh\nexec bash /usr/share/floppaos/look/uninstall.sh "$@"\n' > "${pkgdir}/usr/bin/floppaos-look-remove"
+  chmod 755 "${pkgdir}/usr/bin/floppaos-look" "${pkgdir}/usr/bin/floppaos-look-remove"
+  find "${pkgdir}/usr/share/plasma" -type d -exec chmod 755 {} +
+  find "${pkgdir}/usr/share/plasma" -type f -exec chmod 644 {} +
+}

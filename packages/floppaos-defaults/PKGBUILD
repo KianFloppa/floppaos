@@ -1,0 +1,128 @@
+# FloppaOS: makes the FloppaOS look the default for every NEW user account (ISO only).
+# Existing users keep their settings; they can switch with `floppaos-look`.
+pkgname=floppaos-defaults
+pkgver=0.9
+pkgrel=1
+pkgdesc="FloppaOS: FloppaOS look as the system default for new users"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+depends=('floppaos-look' 'plymouth')
+makedepends=('librsvg' 'plymouth' 'grub' 'noto-fonts')
+# Kept when the user changes the login screen in System Settings (it writes the same file).
+backup=('usr/share/sddm/themes/breeze/theme.conf.user')
+
+package() {
+  # Plasma reads /etc/xdg as the system default; the global theme brings its taskbar layout on first login.
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/kdeglobals" <<'CFG'
+[KDE]
+LookAndFeelPackage=org.floppaos.desktop
+AutomaticLookAndFeel=false
+
+[General]
+ColorScheme=FloppaOSBlack
+accentColorFromWallpaper=false
+
+[Icons]
+Theme=Fluent-dark
+CFG
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/kwinrc" <<'CFG'
+[NightColor]
+Active=false
+
+[org.kde.kdecoration2]
+library=org.kde.kwin.aurorae.v2
+theme=__aurorae__svg__WillowDarkBlur
+BorderSize=NoSides
+BorderSizeAuto=false
+
+[TabBox]
+LayoutName=thumbnail_grid
+CFG
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/plasmarc" <<'CFG'
+[Theme]
+name=Utterly-Round
+CFG
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/kcminputrc" <<'CFG'
+[Mouse]
+cursorTheme=WinSur-dark-cursors
+CFG
+  # Black lock screen and no splash screen (OLED); floppaos-look sets the same for existing users.
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/kscreenlockerrc" <<'CFG'
+[Greeter]
+WallpaperPlugin=org.kde.color
+
+[Greeter][Wallpaper][org.kde.color][General]
+Color=0,0,0
+CFG
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/ksplashrc" <<'CFG'
+[KSplash]
+Engine=none
+Theme=None
+CFG
+  # Login screen (SDDM): KDE's Breeze login theme on a pure black background with the FloppaOS cursor.
+  # The file name sorts before kde_settings.conf, so a theme picked later in System Settings still wins.
+  install -Dm644 /dev/stdin "${pkgdir}/etc/sddm.conf.d/floppaos.conf" <<'CFG'
+[Theme]
+Current=breeze
+CursorTheme=WinSur-dark-cursors
+CFG
+  # Same for KDE's newer Plasma Login Manager (CachyOS's default since March 2026): plain black wallpaper.
+  # Low number so a choice made later in System Settings wins. Not tested yet (research §13).
+  install -Dm644 /dev/stdin "${pkgdir}/etc/plasmalogin.conf.d/10-floppaos.conf" <<'CFG'
+[Greeter]
+WallpaperPluginId=org.kde.color
+
+[Greeter][Wallpaper][org.kde.color][General]
+Color=0,0,0
+CFG
+  install -Dm644 /dev/stdin "${pkgdir}/usr/share/sddm/themes/breeze/theme.conf.user" <<'CFG'
+[General]
+type=color
+color=#000000
+background=
+CFG
+  # Compressed swap in RAM (like CachyOS): the installer creates no swap partition by default, this gives
+  # memory headroom anyway. Half the RAM at most 8 GiB, zstd. Read by zram-generator (iso/packages.extra).
+  install -Dm644 /dev/stdin "${pkgdir}/etc/systemd/zram-generator.conf" <<'CFG'
+[zram0]
+zram-size = min(ram / 2, 8192)
+compression-algorithm = zstd
+swap-priority = 100
+CFG
+  # Once per user at first login: apply the full look. Needed because a distribution can copy its own
+  # panel and settings into new accounts (/etc/skel; CachyOS does), which take priority over /etc/xdg.
+  install -Dm755 "${startdir}/firstlogin.sh" "${pkgdir}/usr/lib/floppaos/firstlogin"
+  install -Dm644 /dev/stdin "${pkgdir}/etc/xdg/autostart/floppaos-firstlogin.desktop" <<'CFG'
+[Desktop Entry]
+Type=Application
+Name=FloppaOS first login
+Exec=/usr/lib/floppaos/firstlogin
+NoDisplay=true
+X-KDE-autostart-phase=2
+CFG
+  # Boot screen: theme "floppaos" (picked in /etc/plymouth/plymouthd.conf, which comes from the ISO). The
+  # installer adds plymouth to the boot image and "splash" to the kernel line by itself once plymouth is there.
+  local t="${pkgdir}/usr/share/plymouth/themes/floppaos"
+  install -Dm644 "${startdir}/plymouth/floppaos.plymouth" "${t}/floppaos.plymouth"
+  rsvg-convert -w 64 -h 64 "${startdir}/../../look/assets/floppaos-start.svg" -o "${t}/watermark.png"
+  chmod 644 "${t}/watermark.png"
+  # Every picture of plymouth's spinner theme except its watermark (the Arch logo), as copies: the boot
+  # image only gets the theme's own folder, so links to ../spinner would point at nothing there.
+  local f
+  for f in /usr/share/plymouth/themes/spinner/*.png; do
+    [ "${f##*/}" = watermark.png ] || install -m644 "${f}" "${t}/${f##*/}"
+  done
+  [ -e "${t}/throbber-0001.png" ] || { echo "plymouth's spinner pictures not found"; return 1; }
+  # Boot menu theme (GRUB), used when another system such as Windows is installed (installer/grub-quiet.sh):
+  # black, the caracal head, "Choose an operating system", Noto Sans fonts made here with grub-mkfont.
+  local g="${pkgdir}/usr/share/grub/themes/floppaos" s
+  install -Dm644 "${startdir}/grub-theme/theme.txt" "${g}/theme.txt"
+  install -m644 "${startdir}"/grub-theme/select_*.png "${g}/"
+  rsvg-convert -w 80 -h 80 "${startdir}/../../look/assets/floppaos-start.svg" -o "${g}/logo.png"
+  for s in 16 22 30; do
+    grub-mkfont -s "${s}" -o "${g}/noto-sans-${s}.pf2" /usr/share/fonts/noto/NotoSans-Regular.ttf 2>/dev/null
+  done
+  chmod 644 "${g}"/*
+  [ -s "${g}/noto-sans-22.pf2" ] || { echo "grub-mkfont made no font"; return 1; }
+}

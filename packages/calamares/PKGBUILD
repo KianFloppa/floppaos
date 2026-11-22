@@ -1,0 +1,51 @@
+# FloppaOS: Calamares, the graphical installer, built from the upstream release on Codeberg.
+# Arch does not carry Calamares. This follows the community package (AUR "calamares" 3.4.2-2) with three
+# changes: Python is a dependency (without it the modules that copy the system and install the bootloader
+# are not built), modules FloppaOS does not use are skipped, and the generic "Install System" menu entry is
+# left out (floppaos-installer brings "Install FloppaOS"). Research §14 has the details.
+pkgname=calamares
+pkgver=3.4.3
+pkgrel=2
+pkgdesc="Distribution-independent installer framework (built for FloppaOS)"
+arch=('x86_64')
+url="https://codeberg.org/Calamares/calamares"
+license=('GPL-3.0-or-later')
+depends=('icu' 'kconfig' 'kcoreaddons' 'kcrash' 'ki18n' 'kpmcore' 'kwidgetsaddons' 'libpwquality'
+         'libxcrypt' 'parted' 'polkit-qt6' 'python' 'qt6-base' 'qt6-declarative' 'qt6-svg' 'yaml-cpp'
+         'rsync' 'squashfs-tools')
+makedepends=('cmake' 'extra-cmake-modules' 'libglvnd' 'ninja' 'qt6-tools' 'qt6-translations')
+source=("calamares-${pkgver}.tar.gz::${url}/releases/download/v${pkgver}/calamares-${pkgver}.tar.gz")
+# Published with the release (Codeberg, 2026-03-10); checked against the downloaded file 2026-11-21.
+sha256sums=('144cbbf6bdcebfb21685950db4f0777218519df095f62f4aa392f28348110d18')
+
+build() {
+  local skip=(
+    # other init systems / boot image tools / OEM and test modules
+    dracut dracutlukscfg initramfs initramfscfg mkinitfs openrcdmcryptcfg services-openrc plymouthcfg
+    dummycpp dummyprocess dummypython oemid tracking zfs zfshostid fsresizer rawfs
+    # needs KDE Plasma's package API, and a terminal widget
+    plasmalnf interactiveterminal
+    # QML variants of pages FloppaOS shows as normal (widget) pages. notesqml (any QML file as a page) is
+    # built: the "Floppa games" page with tick boxes uses it (installer/calamares/modules/notesqml-floppagames.conf)
+    finishedq keyboardq localeq summaryq usersq welcomeq packagechooserq
+    # not used by FloppaOS (yet)
+    packagechooser license
+  )
+  cmake -B build -S "calamares-${pkgver}" -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DWITH_QT6=ON \
+    -DINSTALL_CONFIG=OFF \
+    -DINSTALL_POLKIT=ON \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_SCHEMA_TESTING=OFF \
+    -DSKIP_MODULES="${skip[*]}" \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  rm -f "${pkgdir}/usr/share/applications/calamares.desktop"
+}

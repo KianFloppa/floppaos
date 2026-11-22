@@ -1,0 +1,9 @@
+# FloppaOS: Calamares job that saves the "Floppa games" page's choices into the new system.
+# Installed as /usr/lib/floppaos-installer/calamares-modules/floppasetup/ (settings.conf, modules-search).
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+type:       "job"
+name:       "floppasetup"
+interface:  "python"
+script:     "main.py"
+noconfig:   true

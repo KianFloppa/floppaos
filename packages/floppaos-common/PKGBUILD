@@ -1,0 +1,13 @@
+# FloppaOS: files shared by the other FloppaOS packages (for now: the FloppaOS mark as an icon).
+pkgname=floppaos-common
+pkgver=0.2
+pkgrel=1
+pkgdesc="FloppaOS: shared files (the FloppaOS icon)"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+
+package() {
+  local root="${startdir}/../.."
+  install -Dm644 "${root}/look/assets/floppaos-start.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/floppaos.svg"
+}

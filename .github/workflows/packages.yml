@@ -1,0 +1,58 @@
+# Builds the FloppaOS pacman packages and a pacman repository database from them.
+# Result: the "floppaos-repo" artifact of each run (packages + floppaos.db). Calamares compiles in about
+# 10-20 minutes the first time; later runs reuse it from the cache. Nothing is published yet:
+# publishing (signed, on GitHub Releases or Cloudflare R2) is a later Phase 4 step.
+name: packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/**'
+      - 'look/**'
+      - 'setup/**'
+      - 'installer/**'
+      - 'tools/build-packages.sh'
+      - 'tools/icon-audit.py'
+      - 'CREDITS.md'
+      - '.github/workflows/packages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time: a newer run waits and then reuses the compiled packages the earlier one cached.
+concurrency:
+  group: packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container: archlinux:base-devel
+    steps:
+      - name: Tools
+        run: pacman -Syu --noconfirm --needed git python librsvg plymouth grub noto-fonts  # the last four: floppaos-defaults (boot screen, boot menu theme)
+      - uses: actions/checkout@v6
+      # Compiled packages (Calamares) are kept between runs; tools/build-packages.sh only recompiles one
+      # when its folder in packages/ changed.
+      - uses: actions/cache@v5
+        with:
+          path: /var/cache/floppaos-built
+          key: compiled-${{ github.run_id }}
+          restore-keys: compiled-
+      - name: Build packages
+        run: bash tools/build-packages.sh repo /var/cache/floppaos-built
+      - name: List package contents
+        run: |
+          for p in repo/*.pkg.tar.zst; do
+            echo "== ${p}: $(pacman -Qlp "${p}" | wc -l) entries, $(du -h "${p}" | cut -f1)"
+            pacman -Qlp "${p}" | grep -v '/usr/share/icons/Fluent\(-dark\)\{0,1\}/\|/usr/share/icons/WinSur' || true
+          done
+      - uses: actions/upload-artifact@v6
+        with:
+          name: floppaos-repo
+          path: repo/
+          # The theme parts are large; three days are enough to test a build.
+          retention-days: 3

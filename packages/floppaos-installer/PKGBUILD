@@ -1,0 +1,32 @@
+# FloppaOS: the installer. Calamares settings, FloppaOS branding and the "Floppa games" page (/etc/calamares),
+# the "Install FloppaOS" launcher, the live keyboard helper, the step that saves the "Floppa games" choices
+# and the script that turns the copied live system into a normal installed system. Live ISO only: the installer removes this package and Calamares from what it installs.
+# Sources: installer/ (see installer/README.md).
+pkgname=floppaos-installer
+pkgver=0.10
+pkgrel=1
+pkgdesc="FloppaOS installer: Calamares settings, branding and helpers (live ISO only)"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+depends=('calamares' 'ckbcomp' 'floppaos-common' 'sudo' 'kconfig' 'kdialog' 'systemd' 'dbus' 'rsync'
+         'grub' 'efibootmgr' 'os-prober' 'dosfstools' 'mtools' 'e2fsprogs' 'btrfs-progs' 'xfsprogs'
+         'ntfs-3g' 'cryptsetup' 'lvm2')
+
+package() {
+  local root="${startdir}/../.."
+  install -d "${pkgdir}/etc/calamares"
+  cp -r "${root}/installer/calamares/." "${pkgdir}/etc/calamares/"
+  find "${pkgdir}/etc/calamares" -type d -exec chmod 755 {} +
+  find "${pkgdir}/etc/calamares" -type f -exec chmod 644 {} +
+  install -Dm755 "${root}/installer/target-cleanup.sh" "${pkgdir}/usr/lib/floppaos-installer/target-cleanup"
+  install -Dm755 "${root}/installer/live-keyboard.sh" "${pkgdir}/usr/lib/floppaos-installer/live-keyboard"
+  install -Dm755 "${root}/installer/grub-quiet.sh" "${pkgdir}/usr/lib/floppaos-installer/grub-quiet"
+  # FloppaOS's own Calamares steps (settings.conf: modules-search)
+  local m="${pkgdir}/usr/lib/floppaos-installer/calamares-modules"
+  install -Dm644 "${root}/installer/calamares-modules/floppasetup/module.desc" "${m}/floppasetup/module.desc"
+  install -Dm644 "${root}/installer/calamares-modules/floppasetup/main.py" "${m}/floppasetup/main.py"
+  install -Dm755 "${root}/installer/floppaos-install.sh" "${pkgdir}/usr/bin/floppaos-install"
+  install -Dm644 "${root}/installer/floppaos-install.desktop" "${pkgdir}/usr/share/applications/floppaos-install.desktop"
+  install -Dm644 "${root}/CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"
+}

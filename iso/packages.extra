@@ -1,0 +1,86 @@
+# --- FloppaOS additions to Arch's releng package list ---
+# Desktop
+plasma-desktop
+plasma-workspace
+kwin
+# Login screen: KDE's Plasma Login Manager (decision 19), with its own System Settings page
+plasma-login-manager
+# Opens the KDE wallet with the login password (Wi-Fi passwords etc.), as in Plasma's own package set
+kwallet-pam
+plasma-nm
+plasma-pa
+kscreen
+breeze
+breeze-gtk
+kde-gtk-config
+konsole
+dolphin
+kdialog
+qt6-tools
+xdg-user-dirs
+xdg-desktop-portal-kde
+noto-fonts
+noto-fonts-emoji
+# Sound
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+# Network (desktop)
+networkmanager
+# Graphics and gaming (AMD first; Intel/NVIDIA added later)
+mesa
+vulkan-radeon
+vulkan-icd-loader
+lib32-mesa
+lib32-vulkan-radeon
+gamemode
+# Apps
+firefox
+# Tools Floppa Setup and the look need
+python
+git
+sudo
+# FloppaOS
+floppaos-common
+floppaos-theme-parts
+floppaos-look
+floppaos-setup
+floppaos-defaults
+
+# FloppaOS installer (built in packages/): Calamares, our settings, and os-prober so GRUB finds Windows
+calamares
+floppaos-installer
+os-prober
+
+# Gaming set (README Phase 5): FPS/performance overlay (64- and 32-bit), the gamescope game compositor, GameMode for
+# 32-bit games, Vulkan diagnostics (vulkaninfo), and compressed swap in RAM (floppaos-defaults configures it).
+mangohud
+lib32-mangohud
+gamescope
+lib32-gamemode
+vulkan-tools
+zram-generator
+
+# Everyday apps that Windows has out of the box (decision 20): task manager (Ctrl+Shift+Esc), screenshots
+# (Print key), archives, pictures, PDFs, text, calculator, videos, system information, file-manager thumbnails
+plasma-systemmonitor
+spectacle
+ark
+7zip
+unzip
+gwenview
+okular
+kate
+kcalc
+haruna
+kinfocenter
+kdegraphics-thumbnailers
+ffmpegthumbs
+plasma-browser-integration
+plasma-disks
+# Bluetooth (wireless controllers, headsets) and power profiles (Plasma's power menu); services on in iso/airootfs
+bluez
+bluez-utils
+bluedevil
+power-profiles-daemon

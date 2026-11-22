@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Install FloppaOS
+GenericName=System installer
+Comment=Install FloppaOS on this computer
+Exec=floppaos-install
+Icon=floppaos
+Terminal=false
+StartupNotify=true
+Categories=System;
+Keywords=install;installer;setup;calamares;

@@ -1,0 +1,14 @@
+[kwin]
+Overview=Meta+W\tMeta+Tab,Meta+W,Toggle Overview
+
+[services][org.kde.konsole.desktop]
+_launch=Ctrl+Alt+T
+
+[services][org.kde.krunner.desktop]
+_launch=Alt+Space\tAlt+F2\tSearch\tMeta+R
+
+[services][org.kde.plasma-systemmonitor.desktop]
+_launch=Meta+Esc\tCtrl+Shift+Esc
+
+[services][systemsettings.desktop]
+_launch=Meta+I

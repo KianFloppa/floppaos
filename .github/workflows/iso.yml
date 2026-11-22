@@ -1,0 +1,109 @@
+# Builds the FloppaOS ISO. Started by hand (Actions -> iso -> Run workflow); it takes about 15 minutes.
+# The run keeps the build report (size, checksum, package list) on GitHub. The ISO itself goes to a private
+# Cloudflare R2 bucket (iso/README.md "Downloads"). This repository's runs are public, so the summary shows no
+# download link. Only the newest 3 images are kept, so the bucket stays inside R2's free 10 GB.
+name: iso
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time: a newer run waits and then reuses the compiled packages the earlier one cached.
+concurrency:
+  group: iso-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Repository secrets, set up once (iso/README.md "Downloads"). Secrets, not variables: the logs of a public
+  # repository are public, and GitHub hides secrets in them. Without them the upload is skipped.
+  R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+  R2_BUCKET: ${{ secrets.R2_BUCKET }}
+  R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+  R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+jobs:
+  iso:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: archlinux:base-devel
+      options: --privileged
+    steps:
+      - name: Tools
+        run: pacman -Syu --noconfirm --needed git archiso python librsvg plymouth grub noto-fonts  # the last four: floppaos-defaults (boot screen, boot menu theme)
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: /var/cache/floppaos-built
+          key: compiled-${{ github.run_id }}
+          restore-keys: compiled-
+      - name: Build FloppaOS packages
+        run: bash tools/build-packages.sh /tmp/floppaos-repo /var/cache/floppaos-built
+      - name: Build ISO
+        run: |
+          set -euo pipefail
+          OUT="${PWD}/out" bash iso/build.sh /tmp/floppaos-repo 2>&1 | tee build.log
+      - name: Report
+        run: |
+          set -euo pipefail
+          mkdir -p report
+          cd out
+          ls -la > ../report/files.txt
+          sha256sum ./*.iso > ../report/sha256.txt
+          cd ..
+          # mkarchiso -r deletes its work folder, so read the package list that it writes into the ISO
+          bsdtar -xOf out/*.iso arch/pkglist.x86_64.txt > report/packages.txt || echo 'package list not found' > report/packages.txt
+          tail -n 200 build.log > report/build-log-tail.txt
+          cat report/files.txt report/sha256.txt
+          echo "Packages in the image: $(wc -l < report/packages.txt)"
+      # The installer's cleanup step, run for real inside the new image's system (see the script).
+      # A failure stops the run before the upload, so a broken image never replaces a working one.
+      - name: Test the installer cleanup on the new image
+        run: |
+          set -euo pipefail
+          bash tools/test-installer-cleanup.sh out/*.iso /tmp/installer-test --initramfs 2>&1 | tee report/installer-test.txt
+          rm -rf --one-file-system /tmp/installer-test
+      - name: Upload the ISO to Cloudflare R2 (keeps the newest 3)
+        if: env.R2_ACCOUNT_ID != '' && env.R2_BUCKET != '' && env.R2_ACCESS_KEY_ID != '' && env.R2_SECRET_ACCESS_KEY != ''
+        env:
+          RCLONE_CONFIG_R2_TYPE: s3
+          RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+          RCLONE_CONFIG_R2_REGION: auto
+          RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+        run: |
+          set -euo pipefail
+          pacman -S --noconfirm --needed rclone
+          export RCLONE_CONFIG_R2_ENDPOINT="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          export RCLONE_CONFIG_R2_ACCESS_KEY_ID="${R2_ACCESS_KEY_ID}"
+          export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY="${R2_SECRET_ACCESS_KEY}"
+          iso="$(ls out/*.iso | head -n 1)"
+          name="$(basename "${iso}")"
+          (cd out && sha256sum "${name}" > "${name}.sha256")
+          rclone copyto "${iso}" "r2:${R2_BUCKET}/iso/${name}" --s3-chunk-size 64M --s3-upload-concurrency 8 --stats-one-line --stats 30s -v
+          rclone copyto "out/${name}.sha256" "r2:${R2_BUCKET}/iso/${name}.sha256"
+          # The file names carry the date (floppaos-YYYY.MM.DD-x86_64.iso), so sorting puts the oldest first.
+          rclone lsf "r2:${R2_BUCKET}/iso/" --files-only --include '*.iso' | sort | head -n -3 | while read -r old; do
+            echo "Removing old image ${old}"
+            rclone deletefile "r2:${R2_BUCKET}/iso/${old}"
+            rclone deletefile "r2:${R2_BUCKET}/iso/${old}.sha256" || true
+          done
+          {
+            echo "## FloppaOS image"
+            echo
+            echo "- File: \`${name}\` ($(du -h "${iso}" | cut -f1)), uploaded to the private bucket"
+            echo "- sha256: \`$(cut -d' ' -f1 "out/${name}.sha256")\`"
+            echo
+            echo "Images kept:"
+            rclone lsf "r2:${R2_BUCKET}/iso/" --files-only --include '*.iso' | sort | sed 's/^/    /'
+          } >> "${GITHUB_STEP_SUMMARY}"
+      - name: No upload
+        if: env.R2_ACCOUNT_ID == '' || env.R2_BUCKET == '' || env.R2_ACCESS_KEY_ID == '' || env.R2_SECRET_ACCESS_KEY == ''
+        run: echo "R2 is not set up yet (iso/README.md \"Downloads\"), so the ISO was built but not uploaded." >> "${GITHUB_STEP_SUMMARY}"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: iso-report
+          path: report/
+          retention-days: 14

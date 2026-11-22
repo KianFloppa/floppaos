@@ -1,0 +1,22 @@
+# FloppaOS: Floppa Setup as a system package.
+# Built from this repository's own files (no download), see .github/workflows/packages.yml.
+pkgname=floppaos-setup
+pkgver=0.5
+pkgrel=1
+pkgdesc="Floppa Setup: checks and sets up the Floppa Launcher, the Floppa games and FloppaNet"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+depends=('python' 'kdialog' 'floppaos-common')
+optdepends=('qt6-tools: pin the Floppa Launcher to the taskbar (qdbus6)'
+            'libnotify: the short "setting up" notification at the first login (notify-send)'
+            'konsole: the optional Wine install runs in a terminal window')
+
+package() {
+  local root="${startdir}/../.."
+  install -Dm755 "${root}/setup/floppa-setup.py" "${pkgdir}/usr/bin/floppa-setup"
+  install -Dm644 "${startdir}/floppa-setup.desktop" "${pkgdir}/usr/share/applications/floppa-setup.desktop"
+  # Shown at login until the Floppa Launcher is installed, then it stays silent. After the FloppaOS installer it
+  # does the "Floppa games" page's choices at the new user's first login instead (/etc/floppaos/setup-choices.conf).
+  install -Dm644 "${startdir}/floppa-setup-autostart.desktop" "${pkgdir}/etc/xdg/autostart/floppa-setup.desktop"
+}

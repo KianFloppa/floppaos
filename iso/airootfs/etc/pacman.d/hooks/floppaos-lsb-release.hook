@@ -1,0 +1,11 @@
+# FloppaOS (systems installed from the FloppaOS ISO only; a CachyOS install keeps calling itself CachyOS)
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = lsb-release
+
+[Action]
+Description = Naming FloppaOS in /etc/lsb-release...
+When = PostTransaction
+Exec = /usr/bin/sh /usr/local/lib/floppaos/lsb-release

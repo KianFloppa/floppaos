@@ -1,0 +1,8 @@
+NAME="FloppaOS"
+PRETTY_NAME="FloppaOS (based on Arch Linux)"
+ID=floppaos
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;255;140;0"
+HOME_URL="https://github.com/KianFloppa/floppaos"
+LOGO=floppaos

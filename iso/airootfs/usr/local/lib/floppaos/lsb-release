@@ -1,0 +1,9 @@
+#!/bin/sh
+# FloppaOS (systems installed from the FloppaOS ISO only): name FloppaOS in /etc/lsb-release, which some programs
+# read instead of /etc/os-release. The lsb-release package owns that file without protecting it (no backup
+# entry), so /etc/pacman.d/hooks/floppaos-lsb-release.hook runs this again after each install or update of it.
+cat > /etc/lsb-release <<'CFG'
+DISTRIB_ID="FloppaOS"
+DISTRIB_RELEASE="rolling"
+DISTRIB_DESCRIPTION="FloppaOS (based on Arch Linux)"
+CFG

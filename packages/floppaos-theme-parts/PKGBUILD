@@ -1,0 +1,40 @@
+# FloppaOS: third-party theme parts as one system package, each straight from its own project at one pinned,
+# reviewed commit (CREDITS.md). Their install scripts are not run; we only copy files:
+#  - Icons: Fluent (decision 24), built as "Fluent" and "Fluent-dark" by look/fluent-build.sh. Icons named after
+#    Microsoft products, the Windows logo and other systems' logos are removed by tools/icon-audit.py (they fall
+#    back to Breeze); start-here and distributor-logo show the FloppaOS mark (research section 15).
+#  - Window decoration (Willow Dark Blur), cursors (WinSur Dark) and Plasma style (Utterly-Round, with FloppaOS
+#    Black as its colours): look/parts-build.sh.
+pkgname=floppaos-theme-parts
+pkgver=0.5
+pkgrel=1
+_fluent=c8a244f571ef8fb47812bdc9dbce76546cedce69    # 2026-08-31, reviewed 2026-11-22
+_willow=59b4e62ec63a6948e0f2fbc78a5d951b36a7f584    # branch plasma-6, 2024-04-03, reviewed 2026-11-22
+_winsur=022b4aa0a1f8f90d4cd88ed1a16dc7bcd5f87cc8    # 2020-09-18, reviewed 2026-11-22
+_utterly=7e011c19382f8afa99daac3226828ce82eaf4f13   # 2024-08-08, reviewed 2026-11-22
+pkgdesc="FloppaOS: icons, window decoration, cursors and Plasma style used by the FloppaOS look"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-only' 'GPL-3.0-or-later' 'GPL-2.0-or-later' 'LGPL-2.0-or-later')
+makedepends=('git' 'python')
+optdepends=('breeze-icons: fallback for the icons removed from Fluent')
+source=("fluent::git+https://github.com/vinceliuice/Fluent-icon-theme.git#commit=${_fluent}"
+        "willow::git+https://github.com/doncsugar/willow-theme.git#commit=${_willow}"
+        "winsur::git+https://github.com/yeyushengfan258/WinSur-dark-cursors.git#commit=${_winsur}"
+        "utterly::git+https://github.com/HimDek/Utterly-Round-Plasma-Style.git#commit=${_utterly}")
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+package() {
+  local root="${startdir}/../.."
+  install -d "${pkgdir}/usr/share/icons"
+  bash "${root}/look/fluent-build.sh" "${srcdir}/fluent" "${pkgdir}/usr/share/icons"
+  bash "${root}/look/parts-build.sh" "${srcdir}/willow" "${srcdir}/winsur" "${srcdir}/utterly" "${pkgdir}/usr/share"
+  local lic="${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 "${srcdir}/fluent/COPYING" "${lic}/COPYING.Fluent"
+  install -Dm644 "${srcdir}/willow/LICENSE" "${lic}/LICENSE.Willow"
+  install -Dm644 "${srcdir}/winsur/LICENSE" "${lic}/LICENSE.WinSur"
+  install -Dm644 "${srcdir}/utterly/LICENSE.md" "${lic}/LICENSE.Utterly-Round"
+  install -Dm644 "${root}/CREDITS.md" "${lic}/CREDITS.md"
+  find "${pkgdir}/usr/share" -type d -exec chmod 755 {} +
+  find "${pkgdir}/usr/share" -type f -exec chmod 644 {} +
+}

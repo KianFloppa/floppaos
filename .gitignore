@@ -1,0 +1,13 @@
+# makepkg output when the packages are built inside the repository
+packages/*/pkg/
+packages/*/src/
+packages/*/*.pkg.tar.zst
+packages/*/fluent/
+packages/*/willow/
+packages/*/winsur/
+packages/*/utterly/
+repo/
+
+# Python byte code
+__pycache__/
+*.pyc

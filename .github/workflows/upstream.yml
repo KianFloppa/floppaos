@@ -1,0 +1,26 @@
+# Daily check: is there a newer upstream version of something FloppaOS builds from source?
+# (README Phase 4, "Daily job".) Opens or updates one issue per outdated source, label "upstream".
+# The repo itself is never changed here; see tools/upstream-check.sh.
+name: upstream
+
+on:
+  schedule:
+    - cron: '41 3 * * *'   # every day at 03:41 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Compare with upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          { echo '```'; bash tools/upstream-check.sh --issues; status=$?; echo '```'; exit ${status}; } | tee -a "${GITHUB_STEP_SUMMARY}"
