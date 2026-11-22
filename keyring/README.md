@@ -4,7 +4,7 @@ Installed FloppaOS PCs get FloppaOS's own packages (look, Floppa Setup, installe
 pacman repository on the release [`packages-x86_64`](https://github.com/KianFloppa/floppaos/releases/tag/packages-x86_64)
 of this repo. pacman installs them only when they are signed with this key.
 
-**Status: no key yet.** Until `floppaos.gpg` is in this folder nothing is signed or published, the ISO has no
+**Status: key made 2026-11-22** (main key 2A35 0413 497F 96C2 DCEB  F5DB 8FFB 8188 6526 449C). Before the key existed nothing was signed or published, the ISO had no
 `[floppaos]` repository, and FloppaOS's own packages on an installed PC stay as the ISO installed them.
 
 ## How it is set up
