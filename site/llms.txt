@@ -1,0 +1,13 @@
+# FloppaOS
+
+> FloppaOS is a free, open-source gaming Linux by KianFloppa, based on Arch Linux, with a Windows 11-style desktop (start button, start menu, taskbar, Windows shortcuts) on pure black for OLED screens. It installs the Floppa Launcher for the Floppa games, which have the FloppaNet overlay built in. Status: not released yet; version 0.1.0 is in testing. Official address: floppaos.pages.dev. Source code: https://github.com/KianFloppa/floppaos (GPL-3.0; the name and logo are not under the GPL). Not affiliated with Microsoft, Arch Linux or CachyOS.
+
+## Main pages
+- [FloppaOS – free gaming Linux in a Windows 11 style](https://floppaos.pages.dev/): What FloppaOS is, how to try the Setup Pack on CachyOS now, system requirements, and where the ISO download will be.
+
+## Code and docs
+- [Source code](https://github.com/KianFloppa/floppaos): the FloppaOS look, Floppa Setup, the installer, Secure Boot support and the ISO build.
+- [Install guide](https://github.com/KianFloppa/floppaos/blob/main/docs/install-guide.md): Setup Pack on CachyOS, and the ISO in a virtual machine.
+
+## All sites
+- [KianFloppa](https://kianfloppa.pages.dev/), [Floppaland](https://floppaland.com/), [Floppa Felony](https://felony.floppaland.com/), [Floppa Mining](https://floppamining.com/), [FloppaOS](https://floppaos.pages.dev/)

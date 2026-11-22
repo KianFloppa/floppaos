@@ -44,6 +44,7 @@ GitHub Actions do the same: [`packages`](.github/workflows/packages.yml) on ever
 |---|---|
 | `look/` | The look: global theme, FloppaOS Start menu, colours, theme parts (from their own projects) |
 | `setup/` | Floppa Setup (first-login helper for the Floppa games) |
+| `site/` | The website floppaos.pages.dev (one page, no scripts; see docs/website.md) |
 | `pc-check/` | FloppaOS PC check: read-only hardware report for trying FloppaOS on a real PC |
 | `installer/` | Calamares settings, branding and FloppaOS's install steps |
 | `secureboot/` | Starting FloppaOS with Secure Boot on (shim, signed GRUB and kernels) |

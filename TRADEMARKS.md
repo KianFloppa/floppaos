@@ -12,6 +12,8 @@ about the code. It does not let you use FloppaOS's name, logo or artwork for you
   - `installer/art/logo.svg`, `installer/art/welcome.svg`
   - `installer/calamares/branding/floppaos/logo.png`, `installer/calamares/branding/floppaos/welcome.png`
   - `look/assets/floppaos-start.svg`
+  - the website's `site/assets/logo.svg`, `site/assets/og.jpg`, `site/favicon.svg`, `site/favicon.png`,
+    `site/apple-touch-icon.png`
   - pictures made from these files when FloppaOS is built (start button, `floppaos` icon, boot screen,
     boot menu and installer pictures)
 
