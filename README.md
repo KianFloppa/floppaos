@@ -5,8 +5,8 @@ menu, pure-black colours for OLED screens, and **Floppa Setup**, which installs 
 games.
 
 **Status: 0.1.0 preview (November 2026).** Built and tested in virtual machines only, not yet on many real PCs.
-Download: [floppaos.pages.dev](https://floppaos.pages.dev/#download) (SHA-256 `5c9f73e2d8cc2b2df71dd8c470cb047fef37c6a86b5079115e7112d1c1738e6b`); release notes:
-[v0.1.0-preview](https://github.com/KianFloppa/floppaos/releases/tag/v0.1.0-preview); source code of every
+Download: [floppaos.pages.dev](https://floppaos.pages.dev/#download) (SHA-256 `c5dd7bf773d651c41a0c4e20b5bb387637b052c51dde616632347e277a152f83`); release notes:
+[v0.1.1-preview](https://github.com/KianFloppa/floppaos/releases/tag/v0.1.1-preview); source code of every
 package: [docs/source-code.md](docs/source-code.md). What has changed so far: [CHANGELOG.md](CHANGELOG.md).
 
 > **No warranty.** FloppaOS is a free hobby project made by one person. Installing it, or the Setup Pack, is at

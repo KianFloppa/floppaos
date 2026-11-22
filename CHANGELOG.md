@@ -5,7 +5,10 @@ FloppaOS has one version number for the Setup Pack (`install.sh`) and the ISO, i
 ISO file carries its build date (`floppaos-YYYY.MM.DD-x86_64.iso`); the list of ISO builds is in
 `iso/README.md`.
 
-## 0.1.1-preview (in testing)
+## 0.1.1-preview (2026-11-22)
+
+`floppaos-0.1.1-preview-x86_64.iso`, SHA-256 `c5dd7bf773d651c41a0c4e20b5bb387637b052c51dde616632347e277a152f83`. Install-tested in QEMU: ends with "All done."
+
 
 - Installer: the last step "Writing everything to the disk" (`floppaflush`, `floppaos-installer` 0.14) writes the
   new system's file system journal out before the final unmount. Fixes "Installation failed: Could not unmount
