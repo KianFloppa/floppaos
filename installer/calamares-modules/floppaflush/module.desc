@@ -1,0 +1,9 @@
+# FloppaOS: Calamares job that writes everything to the disk right before the final unmount.
+# Installed as /usr/lib/floppaos-installer/calamares-modules/floppaflush/ (settings.conf, modules-search).
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+type:       "job"
+name:       "floppaflush"
+interface:  "python"
+script:     "main.py"
+noconfig:   true

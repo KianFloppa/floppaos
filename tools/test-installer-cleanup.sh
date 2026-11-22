@@ -118,6 +118,32 @@ PY
   rm -rf "${d}"
   [ "$(grep -v '^#' "${T}/etc/floppaos/setup-choices.conf" | tr '\n' ' ')" = "user=tester launcher=yes pin=no wine=yes " ]
 }
+floppaflush_step_test() {  # the "floppaflush" step with a stand-in for Calamares' API: the right mount points from a
+  # sample mountinfo, and run() returns None also when fsfreeze cannot freeze (here: a folder that is no mount)
+  local d; d="$(mktemp -d)"
+  cat > "${d}/libcalamares.py" <<'PY'
+class _GS:
+    def __init__(self, d): self.d = d
+    def value(self, k): return self.d.get(k)
+class utils:
+    warning = debug = staticmethod(lambda m: None)
+globalstorage = None
+PY
+  printf '%s\n' '1 0 8:1 / /tmp/c rw - ext4 /dev/vda2 rw' '2 1 8:2 / /tmp/c/boot/efi rw - vfat /dev/vda1 rw' \
+    '3 1 0:5 / /tmp/c/proc rw - proc proc rw' '4 1 0:6 / /tmp/c/home rw - btrfs /dev/vda3 rw' \
+    '5 0 0:7 / /tmp/cx rw - ext4 /dev/vdb rw' > "${d}/mountinfo"
+  python3 -I - "${d}" "${T}" <<'PY' || { rm -rf "${d}"; return 1; }
+import importlib.util, sys
+sys.path.insert(0, sys.argv[1]); import libcalamares
+spec = importlib.util.spec_from_file_location("m", sys.argv[2] + "/usr/lib/floppaos-installer/calamares-modules/floppaflush/main.py")
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+assert m.mount_points("/tmp/c", sys.argv[1] + "/mountinfo") == ["/tmp/c", "/tmp/c/home"], m.mount_points("/tmp/c", sys.argv[1] + "/mountinfo")
+libcalamares.globalstorage = libcalamares._GS({"rootMountPoint": sys.argv[1]})
+assert m.run() is None
+PY
+  rm -rf "${d}"
+}
+
 floppasecureboot_step_test() {  # the "floppasecureboot" step with a stand-in for Calamares' API: off = nothing,
   # on = runs "floppaos-secureboot setup --code-file F" in the new system, the code in F, and F deleted afterwards
   local d; d="$(mktemp -d)"
@@ -226,6 +252,8 @@ check "FloppaOS PC check is installed" test -x "${T}/usr/bin/floppaos-pc-check"
 check "FloppaOS PC check runs (read-only report)" bash -c "python3 '${T}/usr/bin/floppaos-pc-check' --print | grep -q '^FloppaOS PC check'"
 check "installer shows the \"Secure Boot\" page" bash -c "grep -q '^ *- notesqml@secureboot\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/etc/calamares/branding/floppaos/secure-boot.qml'"
 check "installer runs the floppasecureboot step right after the boot loader" bash -c "grep -A1 '^ *- bootloader\$' '${T}/etc/calamares/settings.conf' | grep -q '^ *- floppasecureboot\$' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasecureboot/module.desc'"
+check "installer writes everything out (floppaflush) right before the final unmount" bash -c "grep -A1 '^ *- floppaflush\$' '${T}/etc/calamares/settings.conf' | grep -q '^ *- umount\$' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppaflush/module.desc'"
+check "floppaflush step: picks the real file systems below the root and never fails" floppaflush_step_test
 check "floppasecureboot step: nothing without the tick, setup with the code in a root-only file that is removed" floppasecureboot_step_test
 check "Secure Boot tool, its update hooks and the start-up check are installed" bash -c "test -x '${T}/usr/bin/floppaos-secureboot' && test -s '${T}/usr/share/libalpm/hooks/95-floppaos-secureboot-kernel.hook' && test -s '${T}/usr/share/libalpm/hooks/95-floppaos-secureboot-boot.hook' && test -s '${T}/usr/lib/systemd/system/floppaos-secureboot-check.service'"
 check "shim and MokManager are Fedora's Microsoft-signed 16.1-7 files" bash -c "cd '${T}/usr/share/floppaos-shim' && echo '351e131d3c4a636704e9cae7d1296baf8a05beca9922cfebbfa48933c9bf1ad3  shimx64.efi

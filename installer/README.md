@@ -10,6 +10,12 @@ settings and branding (this folder, packaged as `packages/floppaos-installer`). 
    keyboard, disk (erase disk, install alongside another system, or manual), user account, **Floppa games**,
    **Secure Boot**, summary. Nothing touches the disk before the user confirms on the summary page.
 
+   The last step before the unmount, "Writing everything to the disk" (`calamares-modules/floppaflush`), freezes
+   and thaws every real file system of the new system (`fsfreeze`), which writes ext4's journal out completely.
+   Calamares gives the final unmount only 10 seconds; in a slow VM, unmounting right after the copy took longer
+   and the installer ended with "Could not unmount the root of the target system" although everything was
+   written (2026-11-22).
+
    The "Before you start" page (`calamares/branding/floppaos/before-you-start.qml`) is text only: FloppaOS is a
    hobby project by one person with no warranty, installing is at your own risk, back up your files first
    (especially next to Windows), and this is a preview tested in virtual machines. Same wording as the website.

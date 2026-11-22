@@ -5,7 +5,7 @@
 # the copied live system into a normal installed system. Live ISO only: the installer removes this package and Calamares from what it installs.
 # Sources: installer/ (see installer/README.md).
 pkgname=floppaos-installer
-pkgver=0.13
+pkgver=0.14
 pkgrel=1
 pkgdesc="FloppaOS installer: Calamares settings, branding and helpers (live ISO only)"
 arch=('any')
@@ -30,6 +30,8 @@ package() {
   install -Dm644 "${root}/installer/calamares-modules/floppasetup/main.py" "${m}/floppasetup/main.py"
   install -Dm644 "${root}/installer/calamares-modules/floppasecureboot/module.desc" "${m}/floppasecureboot/module.desc"
   install -Dm644 "${root}/installer/calamares-modules/floppasecureboot/main.py" "${m}/floppasecureboot/main.py"
+  install -Dm644 "${root}/installer/calamares-modules/floppaflush/module.desc" "${m}/floppaflush/module.desc"
+  install -Dm644 "${root}/installer/calamares-modules/floppaflush/main.py" "${m}/floppaflush/main.py"
   install -Dm755 "${root}/installer/floppaos-install.sh" "${pkgdir}/usr/bin/floppaos-install"
   install -Dm644 "${root}/installer/floppaos-install.desktop" "${pkgdir}/usr/share/applications/floppaos-install.desktop"
   install -Dm644 "${root}/CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"
