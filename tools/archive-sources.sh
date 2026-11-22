@@ -134,13 +134,14 @@ prefetch_mirrors() {
     elif [[ ${url} =~ ^(https?|ftp):// ]]; then
       if [[ ${netfile} == *::* ]]; then name=${netfile%%::*}; else name=${url##*/}; fi
       [ -s "${srcdest}/${name}" ] && continue
+      # The original address first (makepkg may have stopped before trying it), then the copies
       while IFS= read -r alt; do
         [ -n "${alt}" ] || continue
         if curl -fsSL --retry 2 --connect-timeout 30 --max-time 3600 -o "${srcdest}/${name}.part" "${alt}"; then
-          mv "${srcdest}/${name}.part" "${srcdest}/${name}"; echo "  ${name}: from ${alt%%/${url#*://}*}"; break
+          mv "${srcdest}/${name}.part" "${srcdest}/${name}"; echo "  ${name}: from ${alt%%${url#*://}*}..."; break
         fi
         rm -f "${srcdest}/${name}.part"
-      done < <(mirrors_for "${url}" file)
+      done < <(echo "${url}"; mirrors_for "${url}" file)
     fi
   done < <(grep -E '^\s*source(_[a-z0-9_]+)? = ' "${srcinfo}")
 }
