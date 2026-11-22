@@ -7,7 +7,8 @@ How the pieces fit together:
   * The Floppa Launcher installs, updates and starts the games (Floppa Mining, Floppa Mystery, ...).
   * FloppaNet is the overlay built into every Floppa game (F2 in a game). It is not installed
     separately: a game that is up to date has the current FloppaNet.
-So "FloppaNet ready" means: launcher installed, games installed, F2 free.
+Floppa Setup only installs the launcher (and pins it). Which games to install is up to the user, in the
+launcher; the checklist shows them as information, never as something to do (Kian, 2026-11-22).
 
 On a PC installed from the FloppaOS ISO, the installer's "Floppa games" page has tick boxes for the
 launcher, the taskbar pin and Wine (/etc/floppaos/setup-choices.conf). At the first login of the user the
@@ -33,7 +34,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-VERSION = "0.6"
+VERSION = "0.7"
 SITE = "https://floppamining.com"
 HOME = Path.home()
 _xdg = os.environ.get("XDG_DATA_HOME", "")
@@ -136,16 +137,18 @@ def run_checks():
     else:
         res.append((TODO, "Floppa Launcher not installed"))
 
-    for i, (gid, title, folder, mpath) in enumerate(GAMES):
+    # The games are optional and installed in the launcher: shown as information only, and only when there is
+    # something to say (offline, "could not check" for each game would just be noise).
+    for i, (gid, title, folder, mpath) in enumerate(GAMES if latest else []):
         m = latest if i == 0 else manifest(mpath)
         lx = m.get("linux") if isinstance(m, dict) else None
         if not isinstance(lx, dict) or not lx.get("exe"):
-            res.append((INFO, title + ": " + ("no Linux build yet" if m else "could not check")))
+            res.append((INFO, title + ": no Linux build yet"))
             continue
         if (LAUNCHER_DATA / folder / os.path.basename(str(lx["exe"]))).is_file():
             res.append((OK, title + " installed (FloppaNet included, F2 in the game)"))
         else:
-            res.append((TODO, title + " not installed yet (install it in the Floppa Launcher)"))
+            res.append((INFO, title + ": not installed (optional, in the Floppa Launcher)"))
 
     clash = f2_conflict()
     if clash:
@@ -253,7 +256,7 @@ def available_actions(latest):
         acts.append(("launcher", "Install the Floppa Launcher", True))
     if have or can:
         acts.append(("pin", "Pin the Floppa Launcher to the taskbar", not have))
-        acts.append(("open", "Open the Floppa Launcher now (to install or play the games)", True))
+        acts.append(("open", "Open the Floppa Launcher now (to choose games)", False))
     if latest and not shutil.which("wine") and shutil.which("pacman"):   # online and not installed yet
         acts.append(("wine", "Install Wine for Windows games (about 1 GB, asks for your password)", False))
     return acts
@@ -357,8 +360,8 @@ def report(gui, keys, notes, intro=""):
     head = (intro + "\n\n" if intro else "") + "\n".join(notes)
     if "open" in keys and find_launcher():
         # The launcher installs and updates the games itself; checking them this second would be too early.
-        show(gui, head + "\n\nThe Floppa Launcher now installs or updates the games. Press PLAY there when it is "
-                         "ready.\nOpen Floppa Setup from the start menu any time to check again.")
+        show(gui, head + "\n\nPick the games you want in the Floppa Launcher.\n"
+                         "Open Floppa Setup from the start menu any time to check again.")
     else:
         show(gui, head + "\n\n" + as_text(run_checks()[0]))
 
@@ -385,7 +388,6 @@ def apply_installer_choices(ch, gui):
         if find_launcher() is not None or "launcher" in keys:
             if ch["pin"]:
                 keys.append("pin")
-            keys.append("open")
     if ch["wine"] and not shutil.which("wine") and shutil.which("pacman"):
         keys.append("wine")
     notes = do_actions(keys, latest, pin_wait=90) if keys else []

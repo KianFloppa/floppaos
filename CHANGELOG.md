@@ -10,6 +10,8 @@ ISO file carries its build date (`floppaos-YYYY.MM.DD-x86_64.iso`); the list of 
 - Installer: the last step "Writing everything to the disk" (`floppaflush`, `floppaos-installer` 0.14) writes the
   new system's file system journal out before the final unmount. Fixes "Installation failed: Could not unmount
   the root of the target system" at the very end in slow virtual machines (the installed system was fine).
+- Floppa Setup only installs the Floppa Launcher (and pins it). It no longer opens the launcher by itself, and the
+  games are listed as optional, not as something to do; you pick them in the launcher (`floppaos-setup` 0.8).
 - Source archive: copies from mirrors and Arch Linux's own archives when an upstream server fails.
 
 ## 0.1.0-preview (2026-11-22)
