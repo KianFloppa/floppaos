@@ -13,7 +13,7 @@ public download yet. What has changed so far: [CHANGELOG.md](CHANGELOG.md).
 |---|---|---|
 | What it is | Scripts you run on a normal CachyOS install (KDE Plasma) | FloppaOS's own live and installer image |
 | Base | Your CachyOS install, updated by CachyOS as usual | Arch Linux plus FloppaOS's own packages |
-| How | `./install.sh`, no admin rights needed | Start the image, then "Install FloppaOS" (like a Windows setup) |
+| How | `./install.sh`, no admin rights needed (except once for kdialog, if missing) | Start the image, then "Install FloppaOS" (like a Windows setup) |
 
 Setup Pack, in Konsole on CachyOS with KDE Plasma 6:
 

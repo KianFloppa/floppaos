@@ -11,9 +11,10 @@ plasma-apply-lookandfeel -a org.kde.breezedark.desktop --resetLayout || true
 for svc in org.kde.plasma-systemmonitor.desktop systemsettings.desktop org.kde.krunner.desktop org.kde.konsole.desktop; do
   kwriteconfig6 --file kglobalshortcutsrc --group services --group "${svc}" --key _launch --delete
 done
+# Four numbers per shortcut, unused ones 0 (see apply-extras.sh: with one number KWin crashed).
 gdbus call --session --dest org.kde.kglobalaccel --object-path /kglobalaccel \
   --method org.kde.KGlobalAccel.setForeignShortcutKeys "['kwin', 'Overview', 'KWin', 'Toggle Overview']" \
-  "[([268435543],)]" >/dev/null 2>&1 \
+  "[([268435543, 0, 0, 0],)]" >/dev/null 2>&1 \
   || kwriteconfig6 --file kglobalshortcutsrc --group kwin --key Overview "Meta+W,Meta+W,Toggle Overview"
 kwriteconfig6 --file kwinrc --group TabBox --key LayoutName --delete
 kwriteconfig6 --file kscreenlockerrc --group Greeter --key WallpaperPlugin --delete

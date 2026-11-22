@@ -18,6 +18,9 @@ Two ways to get FloppaOS. Both are for testing until the first release (see `CHA
    cd floppaos
    ./install.sh
    ```
+   CachyOS comes without **kdialog**, the small KDE program Floppa Setup uses for its windows. When
+   `install.sh` asks to install it, press **Enter** and type your password: this updates CachyOS and adds
+   kdialog (a few minutes).
 3. **What happens:** the FloppaOS look is applied (black taskbar, FloppaOS Start menu, icons, shortcuts) and
    **Floppa Setup** opens. Tick what you want and press the button: it installs the Floppa Launcher and pins
    it to the taskbar. The launcher then installs the games.

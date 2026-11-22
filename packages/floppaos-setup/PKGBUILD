@@ -1,7 +1,7 @@
 # FloppaOS: Floppa Setup as a system package.
 # Built from this repository's own files (no download), see .github/workflows/packages.yml.
 pkgname=floppaos-setup
-pkgver=0.5
+pkgver=0.6
 pkgrel=1
 pkgdesc="Floppa Setup: checks and sets up the Floppa Launcher, the Floppa games and FloppaNet"
 arch=('any')

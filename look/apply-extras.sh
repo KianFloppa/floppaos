@@ -19,9 +19,11 @@ ks org.kde.konsole.desktop              "Ctrl+Alt+T"
 # shortcut there any more). Set through the running shortcut service, which takes effect at once and keeps it: it
 # rewrites KWin's lines in kglobalshortcutsrc from memory, so a plain file edit was lost (seen in the VM, research
 # section 14). Qt key codes: Meta 0x10000000 + W 0x57 = 268435543, Meta + Tab 0x01000001 = 285212673.
+# Every shortcut needs exactly four numbers (unused ones 0): the shortcut service runs inside KWin and always reads
+# four; with only one, KWin itself crashed on CachyOS (KF 6.28, seen in the VM 2026-11-22, research section 26).
 if ! gdbus call --session --dest org.kde.kglobalaccel --object-path /kglobalaccel \
      --method org.kde.KGlobalAccel.setForeignShortcutKeys "['kwin', 'Overview', 'KWin', 'Toggle Overview']" \
-     "[([268435543],), ([285212673],)]" >/dev/null 2>&1; then
+     "[([268435543, 0, 0, 0],), ([285212673, 0, 0, 0],)]" >/dev/null 2>&1; then
   # No session bus (or no gdbus): write the file; it is read when the shortcut service starts next time.
   kwriteconfig6 --file kglobalshortcutsrc --group kwin --key Overview "Meta+W${TAB}Meta+Tab,Meta+W,Toggle Overview"
 fi

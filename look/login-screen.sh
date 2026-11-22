@@ -36,17 +36,24 @@ write() {  # write <file> < content
   chmod 644 "$1"
 }
 
+# Only the login screens that are installed. The Breeze SDDM theme folder alone says nothing: Plasma itself
+# brings it, also on systems without SDDM (CachyOS 2026, seen in the VM 2026-11-22).
+done_any=0
+
 # Plasma Login Manager: plain black wallpaper. Its own settings page writes /etc/plasmalogin.conf, which wins.
-write "${PLM}" <<'CFG'
+if command -v plasmalogin >/dev/null 2>&1; then
+  write "${PLM}" <<'CFG'
 [Greeter]
 WallpaperPluginId=org.kde.color
 
 [Greeter][Wallpaper][org.kde.color][General]
 Color=0,0,0
 CFG
+  done_any=1
+fi
 
 # SDDM (older installs): KDE's Breeze login theme on black.
-if [ -d /usr/share/sddm/themes/breeze ]; then
+if command -v sddm >/dev/null 2>&1 && [ -d /usr/share/sddm/themes/breeze ]; then
   write "${SDDM}" <<'CFG'
 [Theme]
 Current=breeze
@@ -57,5 +64,11 @@ type=color
 color=#000000
 background=
 CFG
+  done_any=1
+fi
+
+if [ "${done_any}" -eq 0 ]; then
+  echo "No KDE login screen found (Plasma Login Manager or SDDM): nothing changed."
+  exit 0
 fi
 echo "Black login screen set (shown at the next login). Undo: sudo $0 --undo"

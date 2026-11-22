@@ -2,7 +2,7 @@
 # the FloppaOS start menu widget and the pure-black colour scheme. Each user switches to it with `floppaos-look` and back with
 # `floppaos-look-remove`. Making it the default for new users is the job of a later package (ISO only).
 pkgname=floppaos-look
-pkgver=0.11
+pkgver=0.12
 pkgrel=1
 pkgdesc="FloppaOS look for KDE Plasma 6: global theme with a Windows-style taskbar and pure-black colours"
 arch=('any')

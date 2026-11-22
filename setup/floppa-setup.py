@@ -14,8 +14,8 @@ launcher, the taskbar pin and Wine (/etc/floppaos/setup-choices.conf). At the fi
 installer created, Floppa Setup does what was ticked without asking again (once; offline it tries again at
 the next login). Everyone else gets the checklist below.
 
-Only the Python standard library is used. Dialogs use kdialog (part of KDE); without it,
-or with --check, everything is printed in the terminal.
+Only the Python standard library is used. Dialogs use kdialog (part of KDE). Without it, a notification
+says how to get it (start menu, login) or everything is printed in the terminal; --check always prints.
 """
 import argparse
 import hashlib
@@ -33,7 +33,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-VERSION = "0.5"
+VERSION = "0.6"
 SITE = "https://floppamining.com"
 HOME = Path.home()
 _xdg = os.environ.get("XDG_DATA_HOME", "")
@@ -59,6 +59,9 @@ GAMES = [
 ]
 OK, TODO, INFO, FAIL = "ok", "todo", "info", "fail"
 MARK = {OK: "✔", TODO: "✘", INFO: "•", FAIL: "✘"}
+NEEDS_KDIALOG = ("Floppa Setup needs kdialog, a small KDE program, for its window (missing or too new for this "
+                 "system). In Konsole: sudo pacman -Syu --needed kdialog (this also updates the system), then open "
+                 "Floppa Setup again.")
 
 
 def fetch(url, limit=MAX_DOWNLOAD):
@@ -317,6 +320,17 @@ def kdialog(*args):
     return p.returncode, p.stdout
 
 
+def kdialog_works():
+    """kdialog is there and starts. One installed with pacman -S alone, newer than the rest of the system,
+    stops at once with a library error ("version Qt_6.12 not found", seen on CachyOS 2026-11-22)."""
+    if not shutil.which("kdialog"):
+        return False
+    try:
+        return subprocess.run(["kdialog", "--version"], capture_output=True, timeout=20).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
 def notify(text):
     """Small desktop notification that does not wait for the user. notify-send (libnotify) shows it as
     "Floppa Setup" with the FloppaOS icon and returns at once; kdialog's pop-up is the fallback (on Plasma 6 it
@@ -394,22 +408,30 @@ def main():
     if a.site:
         SITE = a.site.rstrip("/")
 
-    gui = bool(not a.check and not a.yes and shutil.which("kdialog")
-               and (os.environ.get("WAYLAND_DISPLAY") or os.environ.get("DISPLAY")))
+    want_gui = bool(not a.check and not a.yes and (os.environ.get("WAYLAND_DISPLAY") or os.environ.get("DISPLAY")))
     if a.first_run:
         ch = installer_choices()
         if ch is not None and not choices_done():
-            return apply_installer_choices(ch, gui)
+            return apply_installer_choices(ch, want_gui and kdialog_works())
         if ch is not None and not ch["launcher"]:
             return 0   # no launcher wanted in the installer: stay quiet at login (the start menu still has it)
         if find_launcher():
             return 0
+
+    gui = want_gui and kdialog_works()   # only now: a quiet login does not start kdialog at all
+    if want_gui and not gui and not sys.stdout.isatty():
+        # Started from the start menu or at login, but no kdialog for the window (CachyOS's KDE comes without
+        # it, seen in the VM 2026-11-22): say how to get it instead of doing nothing.
+        notify(NEEDS_KDIALOG)
+        return 0
 
     results, latest = run_checks()
     acts = available_actions(latest)
 
     if not gui:
         print("Floppa Setup " + VERSION + "\n" + as_text(results))
+        if want_gui:
+            print(NEEDS_KDIALOG)
         if a.yes:
             for n in do_actions([k for k, _, on in acts if on and k != "open"], latest):
                 print(n)

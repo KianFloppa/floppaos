@@ -27,6 +27,10 @@ been installed on real hardware yet (Phase 6).
   reviewed commit; the FloppaOS Black colours are KDE's Breeze Dark with black backgrounds
   (`floppaos-theme-parts` 0.5, `floppaos-look` 0.11).
 - `install.sh` / `uninstall.sh` (Setup Pack, no admin rights), or the `floppaos-look` package.
+- Setup Pack tested on the CachyOS live system (2026-11-22, Plasma 6.7.4). Fixed there: setting Win+Tab no
+  longer crashes the window manager (KDE Frameworks 6.28 reads every shortcut as four numbers;
+  `floppaos-look` 0.12); `install.sh` offers kdialog, which CachyOS's KDE does not include (one
+  `pacman -Syu`); `look/login-screen.sh` only changes the login screen that is installed.
 
 ### Secure Boot
 - New installer page **Secure Boot**: one tick box, and FloppaOS starts with Secure Boot on, next to Windows. A
@@ -42,6 +46,8 @@ been installed on real hardware yet (Phase 6).
 - After the FloppaOS installer: does at the new user's first login what was ticked on the installer's
   "Floppa games" page, without asking again (offline it tries again at the next login), with a short
   "Floppa Setup" notification.
+- Without a working kdialog (missing, or installed without updating the system) it no longer stays silent:
+  a notification says how to get it (`floppaos-setup` 0.6).
 
 ### FloppaOS ISO (Arch Linux based)
 - Live desktop with "Install FloppaOS"; Calamares 3.4.3 installer with FloppaOS branding and dark pages.
