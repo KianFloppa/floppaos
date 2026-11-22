@@ -81,9 +81,9 @@ shallow_fetch() {
   git -C "${dir}" remote add origin "${url}"
   for try in 1 2; do
     if [ "${kind}" = tag ]; then
-      git -C "${dir}" fetch -q --depth 1 "${from}" "refs/tags/${val}:refs/tags/${val}" 2>/dev/null && return 0
+      timeout 900 git -C "${dir}" fetch -q --depth 1 "${from}" "refs/tags/${val}:refs/tags/${val}" 2>/dev/null && return 0
     else
-      git -C "${dir}" fetch -q --depth 1 "${from}" "${val}" 2>/dev/null \
+      timeout 900 git -C "${dir}" fetch -q --depth 1 "${from}" "${val}" 2>/dev/null \
         && git -C "${dir}" update-ref "refs/heads/pinned-${val}" "${val}" && return 0
     fi
     sleep 20
@@ -127,7 +127,7 @@ prefetch_mirrors() {
         [ -n "${alt}" ] || continue
         if [[ ${kind} == tag || ${kind} == commit ]] && shallow_fetch "${dir}" "${url}" "${alt}" "${kind}" "${val}"; then got=1; break; fi
         rm -rf "${dir}"
-        if git clone -q --mirror "${alt}" "${dir}" 2>/dev/null; then git -C "${dir}" remote set-url origin "${url}"; got=1; break; fi
+        if timeout 1800 git clone -q --mirror "${alt}" "${dir}" 2>/dev/null; then git -C "${dir}" remote set-url origin "${url}"; got=1; break; fi
         rm -rf "${dir}"
       done < <(mirrors_for "${url}" git)
       [ -n "${got}" ] && echo "  ${name}: from a mirror"
@@ -136,7 +136,7 @@ prefetch_mirrors() {
       [ -s "${srcdest}/${name}" ] && continue
       while IFS= read -r alt; do
         [ -n "${alt}" ] || continue
-        if curl -fsSL --retry 2 --connect-timeout 30 -o "${srcdest}/${name}.part" "${alt}"; then
+        if curl -fsSL --retry 2 --connect-timeout 30 --max-time 3600 -o "${srcdest}/${name}.part" "${alt}"; then
           mv "${srcdest}/${name}.part" "${srcdest}/${name}"; echo "  ${name}: from ${alt%%/${url#*://}*}"; break
         fi
         rm -f "${srcdest}/${name}.part"
@@ -148,7 +148,8 @@ prefetch_mirrors() {
 run_makepkg() {
   local d=$1 srcdest=$2
   chown -R "${user}:" "${work}"
-  (cd "${d}" && runuser -u "${user}" -- env SRCDEST="${srcdest}" BUILDDIR="${work}/build" SRCPKGDEST="${work}/srcpkg" \
+  # A server that accepts the connection and then sends nothing would otherwise hang the run for hours
+  (cd "${d}" && timeout 3600 runuser -u "${user}" -- env SRCDEST="${srcdest}" BUILDDIR="${work}/build" SRCPKGDEST="${work}/srcpkg" \
      makepkg --allsource --holdver --skippgpcheck --nodeps --ignorearch --noconfirm --noprogressbar -f > "${work}/makepkg.log" 2>&1)
 }
 
@@ -156,7 +157,7 @@ run_makepkg() {
 arch_srcpkg() {
   local base=$1 ver=$2 enc
   enc=$(printf '%s' "${base}-${ver}" | sed -e 's/%/%25/g' -e 's/:/%3A/g' -e 's/+/%2B/g' -e 's/@/%40/g')
-  curl -fsSL --retry 2 --connect-timeout 30 -o "${work}/srcpkg/${base}-${ver}.src.tar.gz" \
+  curl -fsSL --retry 2 --connect-timeout 30 --max-time 3600 -o "${work}/srcpkg/${base}-${ver}.src.tar.gz" \
     "https://sources.archlinux.org/sources/packages/${enc}.src.tar.gz" 2>/dev/null \
     && echo "  ${base}: Arch Linux's own source archive (sources.archlinux.org)"
 }
@@ -167,7 +168,7 @@ archive_one() {
   path=${base//+/plus}      # and the GitLab project of "libsigc++" is "libsigcplusplus"
   d="${work}/pkg"; srcdest="${work}/srcdest"
   rm -rf "${work}"; mkdir -p "${d%/*}" "${srcdest}" "${work}/build" "${work}/srcpkg"
-  git clone -q --depth 1 --branch "${tag}" "https://gitlab.archlinux.org/archlinux/packaging/packages/${path}.git" "${d}" \
+  timeout 600 git clone -q --depth 1 --branch "${tag}" "https://gitlab.archlinux.org/archlinux/packaging/packages/${path}.git" "${d}" \
     || { echo "${base} ${ver}: recipe not found at gitlab.archlinux.org (tag ${tag})" >> "${failed}"; return 1; }
   chown -R "${user}:" "${work}"
   if [ ! -s "${d}/.SRCINFO" ]; then
