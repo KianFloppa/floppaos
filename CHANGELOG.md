@@ -5,10 +5,17 @@ FloppaOS has one version number for the Setup Pack (`install.sh`) and the ISO, i
 ISO file carries its build date (`floppaos-YYYY.MM.DD-x86_64.iso`); the list of ISO builds is in
 `iso/README.md`.
 
-## 0.1.0 (not released yet)
+## 0.1.0-preview (2026-11-22)
 
-Everything below was built and tested in virtual machines (November 2026). Nothing has
-been installed on real hardware yet (Phase 6).
+The first public image: `floppaos-0.1.0-preview-x86_64.iso`, SHA-256 `5c9f73e2d8cc2b2df71dd8c470cb047fef37c6a86b5079115e7112d1c1738e6b`, from
+[floppaos.pages.dev](https://floppaos.pages.dev/#download). Everything below was built and tested in virtual
+machines (November 2026). Nothing has been installed on real hardware yet (Phase 6); the full 0.1.0 comes
+after that. No warranty: a free hobby project by one person, install at your own risk, back up your files first.
+
+### Release
+- Release builds (`iso` with "release"), downloads from floppaos.pages.dev/download/ (R2, `functions/download/`),
+  the source code of every copyleft package in the release `sources-0.1.0-preview` and the written offer
+  (`docs/source-code.md`), published by the `release` workflow.
 
 ### Desktop look
 - FloppaOS logo: an orange caracal head (the Floppa cat), on the start button, in the installer and on the
@@ -86,3 +93,6 @@ been installed on real hardware yet (Phase 6).
 - Do not start games in the VirtualBox VM: it crashed VirtualBox (2026-11-21). Games are tested on real
   hardware later.
 - "Next to Windows" was tested with a stand-in Windows disk in a VM, not with real Windows yet.
+- 0.1.0-preview: in a very slow VM (no hardware acceleration) the installer can end with "Could not unmount the
+  root of the target system" although everything was written; the system starts normally. Fixed after the
+  preview: the installer step "Writing everything to the disk" (`floppaflush`, `floppaos-installer` 0.14).

@@ -1,6 +1,10 @@
 # Install guide
 
-Two ways to get FloppaOS. Both are for testing until the first release (see `CHANGELOG.md`).
+Two ways to get FloppaOS. The ISO is a preview (0.1.0-preview), tested in virtual machines so far
+(see `CHANGELOG.md`).
+
+> **No warranty.** FloppaOS is a free hobby project made by one person. Installing it, or the Setup Pack, is at
+> your own risk. Back up your files first, especially if you install FloppaOS next to Windows.
 
 | | Way 1: Setup Pack | Way 2: FloppaOS ISO |
 |---|---|---|
@@ -29,13 +33,16 @@ Two ways to get FloppaOS. Both are for testing until the first release (see `CHA
 
 Update later: `cd floppaos && git pull && ./install.sh`. Undo: `./uninstall.sh` (back to KDE's own look).
 
-## Way 2: FloppaOS ISO in a virtual machine
+## Way 2: FloppaOS ISO (virtual machine or USB stick)
 
-1. **Get the ISO.** There is no public download before the first release. Build it yourself
-   (`iso/README.md`) and check it against its `.sha256` file.
+1. **Get the ISO** from [floppaos.pages.dev](https://floppaos.pages.dev/#download) and check it: the
+   SHA-256 checksum next to the download must match. On Windows, in PowerShell:
+   `Get-FileHash floppaos-0.1.0-preview-x86_64.iso`; on Linux: `sha256sum floppaos-0.1.0-preview-x86_64.iso`.
 2. **Start it** in a new virtual machine, for example in VirtualBox: type Arch Linux (64-bit), **UEFI on**,
    6 GB memory, 4 cores, a new 20 GB disk, 3D acceleration on, the ISO in the optical drive. On a real PC:
-   switch **Secure Boot off** in the PC's settings first; the USB stick does not start with it on.
+   write the ISO to a USB stick of 4 GB or more (everything on it is deleted), for example with Rufus in
+   **DD Image mode**, switch **Secure Boot off** in the PC's settings first (the USB stick does not start with it
+   on), and start the PC from the stick.
 3. **Install.** On the live desktop double-click **Install FloppaOS** (also pinned on the taskbar). Pick
    language, time zone and keyboard, then **Erase disk** (only the VM's own empty disk), then your name and
    password. On **Floppa games** tick what Floppa Setup should do after the first start (Floppa Launcher and

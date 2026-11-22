@@ -165,6 +165,7 @@ h2 {
 
 section p { max-width: var(--measure); }
 .nowrap { white-space: nowrap; }
+.sum { overflow-wrap: anywhere; color: var(--ink); }
 
 .features {
   display: grid;

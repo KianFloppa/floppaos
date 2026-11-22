@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FloppaOS – free gaming Linux in a Windows 11 style</title>
-<meta name="description" content="FloppaOS is a free, open-source gaming Linux with a Windows 11-style desktop on pure black. Try the Setup Pack on CachyOS now; the ISO comes with 0.1.0.">
+<meta name="description" content="FloppaOS is a free, open-source gaming Linux with a Windows 11-style desktop on pure black. Download the 0.1.0 preview ISO or try the Setup Pack on CachyOS.">
 <link rel="canonical" href="https://floppaos.pages.dev/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FloppaOS">
 <meta property="og:title" content="FloppaOS – free gaming Linux in a Windows 11 style">
-<meta property="og:description" content="A free, open-source gaming Linux with a Windows 11-style desktop on pure black. Not released yet: 0.1.0 is in testing.">
+<meta property="og:description" content="A free, open-source gaming Linux with a Windows 11-style desktop on pure black. Version 0.1.0 preview, tested in virtual machines.">
 <meta property="og:url" content="https://floppaos.pages.dev/">
 <meta property="og:image" content="https://floppaos.pages.dev/assets/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
 <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/bricolage.woff2?v=1" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css?v=2">
+<link rel="stylesheet" href="/assets/site.css?v=3">
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","@id":"https://floppaos.pages.dev/#website","url":"https://floppaos.pages.dev/","name":"FloppaOS","inLanguage":"en","publisher":{"@id":"https://kianfloppa.pages.dev/#kian"}},{"@context":"https://schema.org","@type":"Person","@id":"https://kianfloppa.pages.dev/#kian","name":"KianFloppa","url":"https://kianfloppa.pages.dev/home/"},{"@context":"https://schema.org","@type":"SoftwareApplication","name":"FloppaOS","url":"https://floppaos.pages.dev/","description":"A free, open-source gaming Linux based on Arch Linux, with a Windows 11-style desktop on pure black.","applicationCategory":"Operating system","operatingSystem":"Linux","isAccessibleForFree":true,"license":"https://www.gnu.org/licenses/gpl-3.0.html","image":"https://floppaos.pages.dev/assets/start-menu.jpg","author":{"@id":"https://kianfloppa.pages.dev/#kian"}}]</script>
 </head>
 <body id="top">
@@ -33,10 +33,10 @@
     <img class="hero-logo" src="/assets/logo.svg" alt="" width="88" height="88">
     <h1>FloppaOS</h1>
     <p class="lede">A free gaming Linux with the desktop you know from Windows&nbsp;11: a start button, a start menu with search, a taskbar and the same keyboard shortcuts. Everything is pure black, made for OLED screens.</p>
-    <p class="status"><span class="dot" aria-hidden="true"></span>Not released yet. Version 0.1.0 is in testing.</p>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Version 0.1.0 preview. Tested in virtual machines so far.</p>
     <p class="actions">
-      <a class="button primary" href="#try">Try the Setup Pack</a>
-      <a class="button" href="https://github.com/KianFloppa/floppaos">Source code on GitHub</a>
+      <a class="button primary" href="#download">Download the preview</a>
+      <a class="button" href="#try">Try the Setup Pack</a>
     </p>
   </header>
 
@@ -89,7 +89,10 @@ cd floppaos
     <div class="warning" role="note">
       <p><strong>No warranty.</strong> FloppaOS is a free hobby project made by one person. Installing it is at your own risk. Back up your files first, especially if you install FloppaOS next to Windows.</p>
     </div>
-    <p>The installer image comes with the first release, 0.1.0. It will be here, with its <span class="nowrap">SHA-256</span> checksum so you can check the download. Releases also show up on <a href="https://github.com/KianFloppa/floppaos/releases">GitHub</a>.</p>
+    <p>Version 0.1.0 preview, November 2026. It has been tested in virtual machines, not yet on many real PCs. What is in it: <a href="https://github.com/KianFloppa/floppaos/releases/tag/v0.1.0-preview">release notes</a>.</p>
+    <p class="actions"><a class="button primary" href="/download/floppaos-0.1.0-preview-x86_64.iso" download>Download the ISO (2.5 GB)</a></p>
+    <p>Check the download: its <span class="nowrap">SHA-256</span> checksum must be<br><code class="sum">5c9f73e2d8cc2b2df71dd8c470cb047fef37c6a86b5079115e7112d1c1738e6b</code><br>On Windows type <code>Get-FileHash floppaos-0.1.0-preview-x86_64.iso</code> in PowerShell, on Linux <code>sha256sum floppaos-0.1.0-preview-x86_64.iso</code>.</p>
+    <p>To install, write it to a USB stick, for example with Rufus in DD Image mode, switch Secure Boot off for the stick, start the PC from it and double-click "Install FloppaOS". The <a href="https://github.com/KianFloppa/floppaos/blob/main/docs/install-guide.md">install guide</a> has every step, also for a virtual machine.</p>
     <dl class="needs">
       <div><dt>PC</dt><dd>64-bit, starts with UEFI</dd></div>
       <div><dt>Memory</dt><dd>2 GB to install, 8 GB or more for games</dd></div>
@@ -105,13 +108,14 @@ cd floppaos
       <li>FloppaOS and the Setup Pack come with no warranty. Use them at your own risk and back up your files first.</li>
       <li>Some online games with kernel anti-cheat only run on Windows. Keep Windows and install FloppaOS next to it.</li>
       <li>The USB stick starts with Secure Boot switched off. The installed FloppaOS can run with it on.</li>
-      <li>FloppaOS is made by one person and has been tested in virtual machines so far. Real PCs come before 0.1.0.</li>
+      <li>FloppaOS is made by one person and has been tested in virtual machines so far. The full 0.1.0, without "preview", comes after tests on real PCs.</li>
     </ul>
   </section>
 
   <section id="source" aria-labelledby="source-h">
     <h2 id="source-h">Open source</h2>
     <p>The <a href="https://github.com/KianFloppa/floppaos">code is on GitHub</a> under GPL-3.0: read it, build the ISO yourself, or send fixes. The name FloppaOS, the caracal logo and the artwork are not under the GPL and stay with KianFloppa, so forks need their own name and logo (<a href="https://github.com/KianFloppa/floppaos/blob/main/TRADEMARKS.md">TRADEMARKS.md</a>).</p>
+    <p>The source code of every program in the ISO is online too: the <a href="https://github.com/KianFloppa/floppaos/releases/tag/sources-0.1.0-preview">source release</a> has each package's full source, and <a href="https://github.com/KianFloppa/floppaos/blob/main/docs/source-code.md">source-code.md</a> says where everything is.</p>
     <p>Found a security problem? Please report it privately first: the contact is in <a href="/.well-known/security.txt">security.txt</a>.</p>
   </section>
 </main>
@@ -128,7 +132,7 @@ cd floppaos
   <a href="#try">Try it</a>
   <a href="#download">Download</a>
   <a href="https://github.com/KianFloppa/floppaos">Source</a>
-  <span class="tray"><span>0.1.0</span><span>in testing</span></span>
+  <span class="tray"><span>0.1.0</span><span>preview</span></span>
 </nav>
 </body>
 </html>

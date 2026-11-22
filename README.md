@@ -4,8 +4,10 @@ A Windows 11-style gaming Linux with FloppaNet built in: KDE Plasma 6 with a Win
 menu, pure-black colours for OLED screens, and **Floppa Setup**, which installs the Floppa Launcher and the Floppa
 games.
 
-**Status: not released yet.** Everything here has been built and tested in virtual machines only. There is no
-public download yet. What has changed so far: [CHANGELOG.md](CHANGELOG.md).
+**Status: 0.1.0 preview (November 2026).** Built and tested in virtual machines only, not yet on many real PCs.
+Download: [floppaos.pages.dev](https://floppaos.pages.dev/#download) (SHA-256 `5c9f73e2d8cc2b2df71dd8c470cb047fef37c6a86b5079115e7112d1c1738e6b`); release notes:
+[v0.1.0-preview](https://github.com/KianFloppa/floppaos/releases/tag/v0.1.0-preview); source code of every
+package: [docs/source-code.md](docs/source-code.md). What has changed so far: [CHANGELOG.md](CHANGELOG.md).
 
 > **No warranty.** FloppaOS is a free hobby project made by one person. Installing it, or the Setup Pack, is at
 > your own risk. Back up your files first, especially if you install FloppaOS next to Windows. The licence says
