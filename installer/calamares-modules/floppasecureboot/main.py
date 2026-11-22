@@ -38,7 +38,7 @@ def wanted(choice):
     return bool(CODE.fullmatch(code)), code
 
 
-def run():
+def _run():
     gs = libcalamares.globalstorage
     choice = gs.value("floppaos_secureboot") if gs.contains("floppaos_secureboot") else None
     enabled, code = wanted(choice)
@@ -73,3 +73,16 @@ def run():
         except OSError:
             pass
     return None
+
+
+def run():
+    """The step, then everything written to the disk. Calamares gives the final unmount only 10 seconds; in a
+    slow VM the freshly built and signed GRUB was still being written then ("could not unmount the root of the
+    target system", 2026-11-22). This is the last step before the unmount that changes the installed system."""
+    try:
+        return _run()
+    finally:
+        try:
+            subprocess.run(["sync"], timeout=600)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
