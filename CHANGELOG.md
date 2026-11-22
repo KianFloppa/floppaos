@@ -71,6 +71,9 @@ been installed on real hardware yet (Phase 6).
 - Gaming set: MangoHud (64/32-bit), gamescope, GameMode (users join the `gamemode` group), Vulkan tools,
   zram swap.
 - Built by GitHub Actions; downloads from a private Cloudflare R2 bucket (newest 3 kept).
+- Updates for FloppaOS's own packages, ready but switched off until the signing key exists: the packages
+  workflow signs them and publishes a pacman repository on the release `packages-x86_64`; the ISO then adds
+  that repository and the `floppaos-keyring` package (`keyring/README.md`).
 
 ### Known issues
 - Do not start games in the VirtualBox VM: it crashed VirtualBox (2026-11-21). Games are tested on real

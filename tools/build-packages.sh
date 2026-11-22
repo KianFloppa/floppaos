@@ -38,6 +38,10 @@ fingerprint() {  # of the files git tracks in a package folder (so downloads and
 
 for dir in "${ROOT}"/packages/*/; do
   name="$(basename "${dir}")"
+  if [ "${name}" = floppaos-keyring ] && [ ! -s "${ROOT}/keyring/floppaos.gpg" ]; then
+    echo "floppaos-keyring: skipped, there is no signing key yet (keyring/README.md)"
+    continue
+  fi
   echo "::group::${name}"
   if [[ "${name}" == floppaos-* ]]; then
     (cd "${dir}" && sudo -u builder makepkg --force --nodeps --noconfirm)

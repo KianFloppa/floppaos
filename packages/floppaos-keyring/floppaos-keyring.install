@@ -1,0 +1,13 @@
+# Adds FloppaOS's key to pacman's keyring (the same way archlinux-keyring does it). On a new install the
+# keyring does not exist yet; the FloppaOS installer creates it and adds every key then (target-cleanup.sh).
+post_upgrade() {
+  if usr/bin/pacman-key -l >/dev/null 2>&1; then
+    usr/bin/pacman-key --populate floppaos
+  fi
+}
+
+post_install() {
+  if [ -x usr/bin/pacman-key ]; then
+    post_upgrade
+  fi
+}

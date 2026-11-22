@@ -49,6 +49,7 @@ GitHub Actions do the same: [`packages`](.github/workflows/packages.yml) on ever
 | `secureboot/` | Starting FloppaOS with Secure Boot on (shim, signed GRUB and kernels) |
 | `iso/` | The live image (Arch Linux's `releng` profile plus FloppaOS) |
 | `packages/` | Package recipes (`PKGBUILD`) |
+| `keyring/` | The public key that signs FloppaOS's packages, and how updates are signed and published |
 | `tools/` | Build, test and check scripts |
 
 ## Rules FloppaOS follows

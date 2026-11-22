@@ -206,6 +206,10 @@ check "package keyring exists" bash -c "test -s '${T}/etc/pacman.d/gnupg/pubring
 check "Arch's keys are trusted" bash -c "chroot '${T}' pacman-key --list-keys 2>/dev/null | grep -q 'Arch Linux'"
 check "no program left running inside the copy (would block unmounting)" no_process_inside
 check "multilib repository is on" grep -q '^\[multilib\]' "${T}/etc/pacman.conf"
+if [ -s "${ROOT}/keyring/floppaos.gpg" ]; then   # FloppaOS updates are on once the signing key exists
+  check "FloppaOS update repository is set up" grep -q '^\[floppaos\]' "${T}/etc/pacman.conf"
+  check "FloppaOS's signing key is trusted" bash -c "chroot '${T}' pacman-key --list-keys 2>/dev/null | grep -q 'FloppaOS'"
+fi
 check "pacman accepts its configuration" in_target pacman-conf
 check "mkinitcpio's pacman hook is not switched off" absent /etc/pacman.d/hooks/90-mkinitcpio-install.hook
 for p in mkinitcpio-archiso memtest86+ livecd-sounds; do

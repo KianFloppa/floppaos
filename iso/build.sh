@@ -30,6 +30,19 @@ sed -i 's/^#\[multilib\]/[multilib]/; /^\[multilib\]/{n;s/^#Include/Include/}' "
 # Otherwise the 32-bit packages games need would get no updates. mkarchiso keeps a pacman.conf from
 # airootfs and sets the package's default one aside as .pacnew (the way Arch's own ISO ships /etc/passwd).
 install -Dm644 "${PROFILE}/pacman.conf" "${PROFILE}/airootfs/etc/pacman.conf"
+# FloppaOS updates (keyring/README.md): once the signing key exists, installed systems get FloppaOS's own
+# packages from the signed repository on the "packages-x86_64" release, and the image carries the key.
+# Build the ISO only after the packages workflow has published that release once.
+if [ -s "${ROOT}/keyring/floppaos.gpg" ]; then
+  echo floppaos-keyring >> "${PROFILE}/packages.x86_64"
+  cat >> "${PROFILE}/airootfs/etc/pacman.conf" <<'CONF'
+
+# FloppaOS's own packages (look, Floppa Setup, installer parts), signed with the key from floppaos-keyring.
+[floppaos]
+SigLevel = Required
+Server = https://github.com/KianFloppa/floppaos/releases/download/packages-$arch
+CONF
+fi
 cat >> "${PROFILE}/pacman.conf" <<CONF
 
 [floppaos]

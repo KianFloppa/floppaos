@@ -1,7 +1,9 @@
 # Builds the FloppaOS pacman packages and a pacman repository database from them.
 # Result: the "floppaos-repo" artifact of each run (packages + floppaos.db). Calamares compiles in about
-# 10-20 minutes the first time; later runs reuse it from the cache. Nothing is published yet:
-# publishing (signed, on GitHub Releases or Cloudflare R2) is a later Phase 4 step.
+# 10-20 minutes the first time; later runs reuse it from the cache.
+# Then "publish" signs them and puts them on the release "packages-x86_64", where installed FloppaOS PCs
+# update from. It is switched off until the signing key exists (keyring/README.md): until then it only
+# says so in the run's summary.
 name: packages
 
 on:
@@ -14,7 +16,9 @@ on:
       - 'installer/**'
       - 'secureboot/**'
       - 'pc-check/**'
+      - 'keyring/**'
       - 'tools/build-packages.sh'
+      - 'tools/publish-packages.sh'
       - 'tools/icon-audit.py'
       - 'CREDITS.md'
       - '.github/workflows/packages.yml'
@@ -58,3 +62,38 @@ jobs:
           path: repo/
           # The theme parts are large; three days are enough to test a build.
           retention-days: 3
+
+  publish:
+    # Separate from the build, so only this short job (our own script) may write releases.
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container: archlinux:base-devel
+    permissions:
+      contents: write
+    env:
+      PACKAGE_SIGNING_KEY: ${{ secrets.PACKAGE_SIGNING_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Signing key there?
+        id: key
+        run: |
+          if [ -n "${PACKAGE_SIGNING_KEY}" ] && [ -s keyring/floppaos.gpg ]; then
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "No signing key yet: packages built, nothing published (keyring/README.md)." >> "${GITHUB_STEP_SUMMARY}"
+          fi
+      - name: Tools
+        if: steps.key.outputs.ready == 'true'
+        run: pacman -Syu --noconfirm --needed github-cli
+      - uses: actions/download-artifact@v8
+        if: steps.key.outputs.ready == 'true'
+        with:
+          name: floppaos-repo
+          path: repo
+      - name: Sign and publish
+        if: steps.key.outputs.ready == 'true'
+        run: bash tools/publish-packages.sh repo

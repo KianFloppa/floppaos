@@ -91,7 +91,7 @@ password with the US layout (y and z swapped) and could not log in afterwards.
 
 - `tools/test-installer-cleanup.sh <iso> <empty folder> --initramfs` unpacks an ISO's system image, does what
   the installer does before the cleanup (remove the live user, create a user, write a German keyboard
-  layout), runs `target-cleanup.sh` inside it (chroot) and checks 68 things (also the boot screen theme,
+  layout), runs `target-cleanup.sh` inside it (chroot) and checks 68 things (70 once FloppaOS's signing key exists) (also the boot screen theme,
   `grub-quiet.sh` with and without a Windows entry, the "Floppa games" page and the step that saves its
   choices, the "Secure Boot" page and step, Fedora's shim files, and signing the image's kernel with a
   throwaway key), then builds the boot image.

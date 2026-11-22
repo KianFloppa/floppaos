@@ -1,0 +1,19 @@
+# FloppaOS: the public key that signs FloppaOS's packages, for pacman's keyring.
+# Built from keyring/ in this repository. Until keyring/floppaos.gpg exists (see keyring/README.md),
+# tools/build-packages.sh skips this package and nothing is signed or published.
+pkgname=floppaos-keyring
+pkgver=1
+pkgrel=1
+pkgdesc="FloppaOS: the key that signs FloppaOS's packages"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+install=floppaos-keyring.install
+
+package() {
+  local root="${startdir}/../.."
+  local f
+  for f in floppaos.gpg floppaos-trusted floppaos-revoked; do
+    install -Dm644 "${root}/keyring/${f}" "${pkgdir}/usr/share/pacman/keyrings/${f}"
+  done
+}
