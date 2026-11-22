@@ -5,7 +5,10 @@ FloppaOS has one version number for the Setup Pack (`install.sh`) and the ISO, i
 ISO file carries its build date (`floppaos-YYYY.MM.DD-x86_64.iso`); the list of ISO builds is in
 `iso/README.md`.
 
-## 0.1.2-preview (in testing)
+## 0.1.2-preview (2026-11-22)
+
+`floppaos-0.1.2-preview-x86_64.iso`, SHA-256 `cc8b7a65049658287ee78ceb5222e3b1b99740542ab3c9b758edc05b48f76a30`. Checked in QEMU: live system, installer welcome and "Before you start" pages.
+
 
 - Says clearly everywhere that FloppaOS currently only supports AMD graphics cards (website, README, install
   guide, installer page "Before you start").

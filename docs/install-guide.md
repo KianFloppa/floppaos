@@ -1,6 +1,6 @@
 # Install guide
 
-Two ways to get FloppaOS. The ISO is a preview (0.1.1-preview), tested in virtual machines so far
+Two ways to get FloppaOS. The ISO is a preview (0.1.2-preview), tested in virtual machines so far
 (see `CHANGELOG.md`).
 
 > **FloppaOS currently only supports AMD graphics cards (Radeon). NVIDIA and Intel come later.**
@@ -39,7 +39,7 @@ Update later: `cd floppaos && git pull && ./install.sh`. Undo: `./uninstall.sh` 
 
 1. **Get the ISO** from [floppaos.pages.dev](https://floppaos.pages.dev/#download) and check it: the
    SHA-256 checksum next to the download must match. On Windows, in PowerShell:
-   `Get-FileHash floppaos-0.1.1-preview-x86_64.iso`; on Linux: `sha256sum floppaos-0.1.1-preview-x86_64.iso`.
+   `Get-FileHash floppaos-0.1.2-preview-x86_64.iso`; on Linux: `sha256sum floppaos-0.1.2-preview-x86_64.iso`.
 2. **Start it** in a new virtual machine, for example in VirtualBox: type Arch Linux (64-bit), **UEFI on**,
    6 GB memory, 4 cores, a new 20 GB disk, 3D acceleration on, the ISO in the optical drive. On a real PC:
    write the ISO to a USB stick of 4 GB or more (everything on it is deleted), for example with Rufus in
