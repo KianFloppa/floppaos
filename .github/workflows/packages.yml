@@ -13,6 +13,7 @@ on:
       - 'setup/**'
       - 'installer/**'
       - 'secureboot/**'
+      - 'pc-check/**'
       - 'tools/build-packages.sh'
       - 'tools/icon-audit.py'
       - 'CREDITS.md'

@@ -49,6 +49,12 @@ been installed on real hardware yet (Phase 6).
 - Without a working kdialog (missing, or installed without updating the system) it no longer stays silent:
   a notification says how to get it (`floppaos-setup` 0.6).
 
+### FloppaOS PC check
+- New: one text file with what works on this PC: graphics driver and Vulkan, screens (refresh rate, VRR, HDR),
+  sound, Wi-Fi, Bluetooth, game controllers, Secure Boot, kernel errors. Read-only; no serial numbers or network
+  addresses. On the live desktop of the ISO (for trying FloppaOS from the USB stick), in the start menu, and in
+  the Setup Pack (`floppaos-setup` 0.7).
+
 ### FloppaOS ISO (Arch Linux based)
 - Live desktop with "Install FloppaOS"; Calamares 3.4.3 installer with FloppaOS branding and dark pages.
 - Installer page "Floppa games": tick boxes for the Floppa Launcher, pinning it to the taskbar and Wine

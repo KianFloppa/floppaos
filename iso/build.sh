@@ -54,6 +54,8 @@ install -Dm644 "${ROOT}/look/color-schemes/FloppaOSBlack.colors" "${PROFILE}/air
 
 # "Install FloppaOS" on the live desktop (same entry as in the start menu, from installer/).
 install -Dm644 "${ROOT}/installer/floppaos-install.desktop" "${PROFILE}/airootfs/home/floppa/Desktop/floppaos-install.desktop"
+# "FloppaOS PC check" next to it: what works on this PC, for trying FloppaOS from the USB stick on a real PC.
+install -Dm644 "${ROOT}/pc-check/floppaos-pc-check.desktop" "${PROFILE}/airootfs/home/floppa/Desktop/floppaos-pc-check.desktop"
 
 # Live user "floppa" (no password; logs in automatically; sudo without password, live system only)
 echo 'floppa:x:1000:1000:FloppaOS live user:/home/floppa:/bin/bash' >> "${PROFILE}/airootfs/etc/passwd"
@@ -87,7 +89,7 @@ sed -i \
   -e 's/^buildmodes=.*/buildmodes=("iso")/' \
   -e "s/^airootfs_image_tool_options=.*/airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '15' '-b' '1M')/" \
   "${PROFILE}/profiledef.sh"
-sed -i 's|^file_permissions=(|file_permissions=(\n  ["/home/floppa"]="1000:1000:750"\n  ["/home/floppa/Desktop"]="1000:1000:755"\n  ["/home/floppa/Desktop/floppaos-install.desktop"]="1000:1000:755"\n  ["/etc/sudoers.d/floppa-live"]="0:0:440"\n  ["/usr/local/lib/floppaos/lsb-release"]="0:0:755"|' "${PROFILE}/profiledef.sh"
+sed -i 's|^file_permissions=(|file_permissions=(\n  ["/home/floppa"]="1000:1000:750"\n  ["/home/floppa/Desktop"]="1000:1000:755"\n  ["/home/floppa/Desktop/floppaos-install.desktop"]="1000:1000:755"\n  ["/home/floppa/Desktop/floppaos-pc-check.desktop"]="1000:1000:755"\n  ["/etc/sudoers.d/floppa-live"]="0:0:440"\n  ["/usr/local/lib/floppaos/lsb-release"]="0:0:755"|' "${PROFILE}/profiledef.sh"
 
 mkarchiso -v -r -w "${WORK}/work" -o "${OUT}" "${PROFILE}"
 ls -la "${OUT}"

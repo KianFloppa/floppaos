@@ -217,6 +217,8 @@ check "installer shows the \"Floppa games\" page" bash -c "grep -q '^ *- notesqm
 check "installer runs the floppasetup step" bash -c "grep -q '^ *- floppasetup\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasetup/module.desc'"
 check "floppasetup step saves the choices for Floppa Setup" floppasetup_step_test
 check "Floppa Setup reads the installer's choices" grep -q '/etc/floppaos/setup-choices.conf' "${T}/usr/bin/floppa-setup"
+check "FloppaOS PC check is installed" test -x "${T}/usr/bin/floppaos-pc-check"
+check "FloppaOS PC check runs (read-only report)" bash -c "python3 '${T}/usr/bin/floppaos-pc-check' --print | grep -q '^FloppaOS PC check'"
 check "installer shows the \"Secure Boot\" page" bash -c "grep -q '^ *- notesqml@secureboot\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/etc/calamares/branding/floppaos/secure-boot.qml'"
 check "installer runs the floppasecureboot step right after the boot loader" bash -c "grep -A1 '^ *- bootloader\$' '${T}/etc/calamares/settings.conf' | grep -q '^ *- floppasecureboot\$' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasecureboot/module.desc'"
 check "floppasecureboot step: nothing without the tick, setup with the code in a root-only file that is removed" floppasecureboot_step_test

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=FloppaOS PC check
+GenericName=Hardware report
+Comment=What works on this PC (graphics, screens, sound, Wi-Fi, Bluetooth, controllers), as one text file
+Exec=floppaos-pc-check
+Icon=floppaos
+Terminal=false
+Categories=System;
+Keywords=hardware;report;driver;check;

@@ -1,14 +1,16 @@
 # FloppaOS: Floppa Setup as a system package.
 # Built from this repository's own files (no download), see .github/workflows/packages.yml.
 pkgname=floppaos-setup
-pkgver=0.6
+pkgver=0.7
 pkgrel=1
-pkgdesc="Floppa Setup: checks and sets up the Floppa Launcher, the Floppa games and FloppaNet"
+pkgdesc="Floppa Setup (Floppa Launcher, games, FloppaNet) and the FloppaOS PC check (hardware report)"
 arch=('any')
 url="https://github.com/KianFloppa/floppaos"
 license=('GPL-3.0-or-later')
 depends=('python' 'kdialog' 'floppaos-common')
 optdepends=('qt6-tools: pin the Floppa Launcher to the taskbar (qdbus6)'
+            'pciutils: PC check: graphics and network chips'
+            'vulkan-tools: PC check: Vulkan (vulkaninfo)'
             'libnotify: the short "setting up" notification at the first login (notify-send)'
             'konsole: the optional Wine install runs in a terminal window')
 
@@ -19,4 +21,7 @@ package() {
   # Shown at login until the Floppa Launcher is installed, then it stays silent. After the FloppaOS installer it
   # does the "Floppa games" page's choices at the new user's first login instead (/etc/floppaos/setup-choices.conf).
   install -Dm644 "${startdir}/floppa-setup-autostart.desktop" "${pkgdir}/etc/xdg/autostart/floppa-setup.desktop"
+  # FloppaOS PC check: read-only hardware report (pc-check/), also on the live desktop of the ISO.
+  install -Dm755 "${root}/pc-check/floppaos-pc-check.py" "${pkgdir}/usr/bin/floppaos-pc-check"
+  install -Dm644 "${root}/pc-check/floppaos-pc-check.desktop" "${pkgdir}/usr/share/applications/floppaos-pc-check.desktop"
 }

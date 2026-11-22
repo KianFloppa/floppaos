@@ -28,5 +28,10 @@ Categories=Game;Settings;
 DESKTOP
 }
 entry "${APPS}/floppa-setup.desktop" ""
+# FloppaOS PC check (read-only hardware report), start menu only.
+cp -f "${DIR}/../pc-check/floppaos-pc-check.py" "${DATA}/floppaos-pc-check.py"
+chmod +x "${DATA}/floppaos-pc-check.py"
+sed -e "s|^Exec=.*|Exec=python3 \"${DATA}/floppaos-pc-check.py\"|" -e "s|^Icon=.*|Icon=${ICON}|" \
+  "${DIR}/../pc-check/floppaos-pc-check.desktop" > "${APPS}/floppaos-pc-check.desktop"
 entry "${AUTO}/floppa-setup.desktop" " --first-run"
-echo "Floppa Setup installed (start menu: Floppa Setup)."
+echo "Floppa Setup and FloppaOS PC check installed (start menu)."
