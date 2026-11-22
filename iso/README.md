@@ -40,8 +40,9 @@ Write on that one bucket). Without them the workflow still builds and tests the 
 
 ## Releases
 
-1. Set the file `VERSION` to the release version (for example `0.1.0-preview`) and note the release in
-   `CHANGELOG.md`.
+1. Set the file `VERSION` to the release version (for example `0.1.0-preview`), the same version in the
+   installer's `installer/calamares/branding/floppaos/branding.desc` (and bump `floppaos-installer`), and note the
+   release in `CHANGELOG.md`.
 2. Actions → `iso` → Run workflow with `release` = that version. The run builds and tests the image, uploads it to
    `release/` (so `floppaos.pages.dev/download/floppaos-<version>-x86_64.iso` works from then on), makes the
    **draft** GitHub release `v<version>` with the checksum and the package lists, makes the release
