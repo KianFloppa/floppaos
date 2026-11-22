@@ -5,6 +5,13 @@ FloppaOS has one version number for the Setup Pack (`install.sh`) and the ISO, i
 ISO file carries its build date (`floppaos-YYYY.MM.DD-x86_64.iso`); the list of ISO builds is in
 `iso/README.md`.
 
+## 0.1.1-preview (in testing)
+
+- Installer: the last step "Writing everything to the disk" (`floppaflush`, `floppaos-installer` 0.14) writes the
+  new system's file system journal out before the final unmount. Fixes "Installation failed: Could not unmount
+  the root of the target system" at the very end in slow virtual machines (the installed system was fine).
+- Source archive: copies from mirrors and Arch Linux's own archives when an upstream server fails.
+
 ## 0.1.0-preview (2026-11-22)
 
 The first public image: `floppaos-0.1.0-preview-x86_64.iso`, SHA-256 `5c9f73e2d8cc2b2df71dd8c470cb047fef37c6a86b5079115e7112d1c1738e6b`, from
