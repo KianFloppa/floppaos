@@ -6,8 +6,9 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Floppa Setup opens its windows with kdialog, a small KDE program. CachyOS's KDE comes without it (seen in
-# the VM 2026-11-22), so ask once here. Always pacman -Syu: a kdialog installed with -S alone was newer than
+# Floppa Setup opens its windows with kdialog, a small KDE program. An installed CachyOS KDE has it (it is in
+# CachyOS's KDE package group), but the CachyOS live system and other KDE setups may not (seen in the VM
+# 2026-11-22), so ask once here. Always pacman -Syu: a kdialog installed with -S alone was newer than
 # the rest of the system and did not start ("version Qt_6.12 not found"). Arch-based systems update as a whole.
 kdialog_ok() {
   command -v kdialog >/dev/null 2>&1 || return 1

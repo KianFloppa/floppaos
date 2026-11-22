@@ -420,8 +420,8 @@ def main():
 
     gui = want_gui and kdialog_works()   # only now: a quiet login does not start kdialog at all
     if want_gui and not gui and not sys.stdout.isatty():
-        # Started from the start menu or at login, but no kdialog for the window (CachyOS's KDE comes without
-        # it, seen in the VM 2026-11-22): say how to get it instead of doing nothing.
+        # Started from the start menu or at login, but no kdialog for the window (the CachyOS live system has
+        # none, seen in the VM 2026-11-22): say how to get it instead of doing nothing.
         notify(NEEDS_KDIALOG)
         return 0
 

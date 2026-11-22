@@ -28,8 +28,8 @@ been installed on real hardware yet (Phase 6).
   (`floppaos-theme-parts` 0.5, `floppaos-look` 0.11).
 - `install.sh` / `uninstall.sh` (Setup Pack, no admin rights), or the `floppaos-look` package.
 - Setup Pack tested on the CachyOS live system (2026-11-22, Plasma 6.7.4). Fixed there: setting Win+Tab no
-  longer crashes the window manager (KDE Frameworks 6.28 reads every shortcut as four numbers;
-  `floppaos-look` 0.12); `install.sh` offers kdialog, which CachyOS's KDE does not include (one
+  longer crashes the window manager (KDE Frameworks up to 6.29 read every shortcut as exactly four numbers;
+  `floppaos-look` 0.12); `install.sh` offers kdialog when it is missing, as on the CachyOS live system (one
   `pacman -Syu`); `look/login-screen.sh` only changes the login screen that is installed.
 
 ### Secure Boot
