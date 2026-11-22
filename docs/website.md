@@ -9,6 +9,13 @@ the clock would be.
 deploy.
 
 - `_headers`: security headers, stricter than usual (`script-src 'none'`, `style-src 'self'`, `connect-src 'none'`).
+- `datenschutz/`: the privacy policy (German, English summary at the end). The footer of every page links it and
+  the legal imprint, which is the same one KianFloppa's other sites use (mein.online-impressum.de/kianfloppa/).
+  Change the privacy policy when the site starts doing something new with data (scripts, forms, counters,
+  another host for downloads).
+- The no-warranty notice ("free hobby project made by one person, at your own risk, back up first") stands in the
+  download section and in "Good to know", with the same wording as the README and the installer's "Before you
+  start" page. Keep the three the same.
 - `robots.txt`, `sitemap.xml`, `llms.txt`, `404.html`, `.well-known/security.txt` (contact: the shared security page
   floppaland.com/security/), the IndexNow key file (`<32 hex>.txt`).
 - `assets/`: styles, the font Bricolage Grotesque (SIL Open Font License, licence file next to it), the logo,

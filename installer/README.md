@@ -6,9 +6,13 @@ settings and branding (this folder, packaged as `packages/floppaos-installer`). 
 
 ## How it installs
 
-1. **Pages:** welcome (checks: 20 GiB disk, 2 GiB RAM, power), language and time zone, keyboard, disk
-   (erase disk, install alongside another system, or manual), user account, **Floppa games**, **Secure Boot**,
-   summary. Nothing touches the disk before the user confirms on the summary page.
+1. **Pages:** welcome (checks: 20 GiB disk, 2 GiB RAM, power), **Before you start**, language and time zone,
+   keyboard, disk (erase disk, install alongside another system, or manual), user account, **Floppa games**,
+   **Secure Boot**, summary. Nothing touches the disk before the user confirms on the summary page.
+
+   The "Before you start" page (`calamares/branding/floppaos/before-you-start.qml`) is text only: FloppaOS is a
+   hobby project by one person with no warranty, installing is at your own risk, back up your files first
+   (especially next to Windows), and this is a preview tested in virtual machines. Same wording as the website.
 
    The "Floppa games" page (`calamares/branding/floppaos/floppa-games.qml`, shown by Calamares' notesqml
    module) has three tick boxes: install the Floppa Launcher (ticked), pin it to the taskbar (ticked), install

@@ -217,6 +217,7 @@ for p in mkinitcpio-archiso memtest86+ livecd-sounds; do
 done
 check "Plasma keyboard layout is de (nodeadkeys)" bash -c "grep -q '^LayoutList=de$' '${T}/etc/xdg/kxkbrc' && grep -q '^VariantList=nodeadkeys$' '${T}/etc/xdg/kxkbrc'"
 check "host name kept" grep -qx tester-floppaos "${T}/etc/hostname"
+check "installer shows the \"Before you start\" page (no warranty, back up first) right after the welcome page" bash -c "grep -A1 '^ *- welcome\$' '${T}/etc/calamares/settings.conf' | grep -q '^ *- notesqml@beforeyoustart\$' && grep -q 'no warranty' '${T}/etc/calamares/branding/floppaos/before-you-start.qml'"
 check "installer shows the \"Floppa games\" page" bash -c "grep -q '^ *- notesqml@floppagames\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/etc/calamares/branding/floppaos/floppa-games.qml' && test -s '${T}/usr/lib/calamares/modules/notesqml/module.desc'"
 check "installer runs the floppasetup step" bash -c "grep -q '^ *- floppasetup\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasetup/module.desc'"
 check "floppasetup step saves the choices for Floppa Setup" floppasetup_step_test

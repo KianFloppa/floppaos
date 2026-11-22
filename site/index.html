@@ -22,7 +22,7 @@
 <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/bricolage.woff2?v=1" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css?v=1">
+<link rel="stylesheet" href="/assets/site.css?v=2">
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","@id":"https://floppaos.pages.dev/#website","url":"https://floppaos.pages.dev/","name":"FloppaOS","inLanguage":"en","publisher":{"@id":"https://kianfloppa.pages.dev/#kian"}},{"@context":"https://schema.org","@type":"Person","@id":"https://kianfloppa.pages.dev/#kian","name":"KianFloppa","url":"https://kianfloppa.pages.dev/home/"},{"@context":"https://schema.org","@type":"SoftwareApplication","name":"FloppaOS","url":"https://floppaos.pages.dev/","description":"A free, open-source gaming Linux based on Arch Linux, with a Windows 11-style desktop on pure black.","applicationCategory":"Operating system","operatingSystem":"Linux","isAccessibleForFree":true,"license":"https://www.gnu.org/licenses/gpl-3.0.html","image":"https://floppaos.pages.dev/assets/start-menu.jpg","author":{"@id":"https://kianfloppa.pages.dev/#kian"}}]</script>
 </head>
 <body id="top">
@@ -86,6 +86,9 @@ cd floppaos
 
   <section id="download" aria-labelledby="download-h">
     <h2 id="download-h">Download the FloppaOS ISO</h2>
+    <div class="warning" role="note">
+      <p><strong>No warranty.</strong> FloppaOS is a free hobby project made by one person. Installing it is at your own risk. Back up your files first, especially if you install FloppaOS next to Windows.</p>
+    </div>
     <p>The installer image comes with the first release, 0.1.0. It will be here, with its <span class="nowrap">SHA-256</span> checksum so you can check the download. Releases also show up on <a href="https://github.com/KianFloppa/floppaos/releases">GitHub</a>.</p>
     <dl class="needs">
       <div><dt>PC</dt><dd>64-bit, starts with UEFI</dd></div>
@@ -99,6 +102,7 @@ cd floppaos
   <section id="notes" aria-labelledby="notes-h">
     <h2 id="notes-h">Good to know</h2>
     <ul class="notes">
+      <li>FloppaOS and the Setup Pack come with no warranty. Use them at your own risk and back up your files first.</li>
       <li>Some online games with kernel anti-cheat only run on Windows. Keep Windows and install FloppaOS next to it.</li>
       <li>The USB stick starts with Secure Boot switched off. The installed FloppaOS can run with it on.</li>
       <li>FloppaOS is made by one person and has been tested in virtual machines so far. Real PCs come before 0.1.0.</li>
@@ -113,6 +117,7 @@ cd floppaos
 </main>
 
 <footer class="footer">
+  <p class="legal-links"><a href="https://mein.online-impressum.de/kianfloppa/">Legal imprint</a> <a href="/datenschutz/">Privacy policy</a> <a href="https://floppaland.com/security/">Security</a></p>
   <p>FloppaOS is not affiliated with Microsoft, Arch Linux or CachyOS. Windows is a trademark of Microsoft Corporation.</p>
   <p class="sites"><span>My sites:</span> <a href="https://kianfloppa.pages.dev/">KianFloppa</a> <a href="https://floppaland.com/">Floppaland</a> <a href="https://felony.floppaland.com/">Floppa Felony</a> <a href="https://floppamining.com/">Floppa Mining</a> <a href="https://floppaos.pages.dev/" aria-current="page">FloppaOS</a></p>
 </footer>

@@ -49,6 +49,11 @@ been installed on real hardware yet (Phase 6).
 - Without a working kdialog (missing, or installed without updating the system) it no longer stays silent:
   a notification says how to get it (`floppaos-setup` 0.6).
 
+### Website
+- floppaos.pages.dev: the no-warranty notice in the download section and in "Good to know", a legal imprint
+  link and its own privacy policy page (`/datenschutz/`, German with an English summary). `/etc/os-release`
+  points to the website, the bug tracker and the privacy policy.
+
 ### FloppaOS PC check
 - New: one text file with what works on this PC: graphics driver and Vulkan, screens (refresh rate, VRR, HDR),
   sound, Wi-Fi, Bluetooth, game controllers, Secure Boot, kernel errors. Read-only; no serial numbers or network
@@ -57,6 +62,8 @@ been installed on real hardware yet (Phase 6).
 
 ### FloppaOS ISO (Arch Linux based)
 - Live desktop with "Install FloppaOS"; Calamares 3.4.3 installer with FloppaOS branding and dark pages.
+- Installer page "Before you start", right after the welcome page: no warranty, installing is at your own
+  risk, back up your files first (`floppaos-installer` 0.13). The installer calls itself "FloppaOS 0.1.0 preview".
 - Installer page "Floppa games": tick boxes for the Floppa Launcher, pinning it to the taskbar and Wine
   (Floppa Setup does them at the first login; nothing is downloaded during the installation).
 - The "Disks & Devices" pop-up no longer opens by itself while the installer works on the disk.

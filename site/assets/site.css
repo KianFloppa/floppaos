@@ -199,6 +199,18 @@ pre code { font-size: inherit; }
 .needs dt { color: var(--ash); }
 .needs dd { margin: 0; }
 
+/* The no-warranty notice: the one boxed thing on the page, so it is not overlooked. */
+.warning {
+  max-width: var(--measure);
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--amber);
+  border-radius: 6px;
+  background: var(--panel);
+}
+.warning p { margin: 0; }
+
 .notes { max-width: var(--measure); margin: 0; padding-left: 1.2rem; }
 .notes li { margin-bottom: .7rem; }
 .notes li::marker { color: var(--amber); }
@@ -210,6 +222,19 @@ pre code { font-size: inherit; }
 .sites { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
 .sites a { color: var(--ink); }
 .sites a[aria-current] { color: var(--amber); }
+.legal-links { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
+.legal-links a { color: var(--ink); }
+.legal-links a[aria-current] { color: var(--amber); }
+
+/* Privacy page */
+
+.legal { padding-top: clamp(2rem, 8vh, 4rem); }
+.legal > p, .legal section p { max-width: var(--measure); }
+.legal .back { margin: 0 0 2rem; }
+.legal h1 { font-size: clamp(2.25rem, 7vw, 3.5rem); hyphens: auto; }
+.legal .meta { color: var(--ash); }
+.legal h2 { font-size: 1.25rem; }
+.legal section { padding-block: 1rem 0; }
 
 /* The taskbar: start button far left, sections like pinned apps, the version where the clock sits. */
 
