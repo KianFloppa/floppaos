@@ -5,6 +5,8 @@
 # The release sources-<version> must already hold sources.tsv (iso.yml puts it there). Eight runners share the
 # work; each package is uploaded right after it is made, so a runner's disk never holds more than one. Running it
 # again replaces the files (--clobber). Takes about an hour; free, because this repository is public.
+# "only" redoes just the named source packages (for example the ones in FAILED.txt) and merges them into the
+# existing SOURCES-INDEX.tsv.
 name: sources
 
 on:
@@ -13,11 +15,19 @@ on:
       release:
         description: 'Release version, e.g. 0.1.0-preview (its release sources-<version> must hold sources.tsv)'
         required: true
+      only:
+        description: 'Optional: only these source packages, separated by spaces (e.g. the ones in FAILED.txt)'
+        required: false
+        default: ''
   workflow_call:
     inputs:
       release:
         type: string
         required: true
+      only:
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -52,6 +62,7 @@ jobs:
       - name: Archive and upload the sources (shard ${{ matrix.shard }} of 8)
         env:
           SHARD: ${{ matrix.shard }}
+          ONLY: ${{ inputs.only }}
         run: |
           set -euo pipefail
           UPLOAD_TO="sources-${REL}" bash tools/archive-sources.sh /tmp/list/sources.tsv /tmp/out "${SHARD}" 8
@@ -70,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REL: ${{ inputs.release }}
+      ONLY: ${{ inputs.only }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/download-artifact@v8
@@ -81,8 +93,19 @@ jobs:
         run: |
           set -euo pipefail
           [[ ${REL} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${REL}"; exit 1; }
-          { printf '# source package\tversion\tfile\tbytes\tsha256\n'; cat parts/index-*.tsv | sort; } > SOURCES-INDEX.tsv
-          cat parts/failed-*.txt | sort > FAILED.txt || true
+          cat parts/index-*.tsv > new-index.tsv
+          cat parts/failed-*.txt > FAILED.txt || true
+          if [ -n "${ONLY}" ]; then
+            # Redo of some packages: keep everything else from the existing index and failure list
+            gh release download "sources-${REL}" --repo "${GITHUB_REPOSITORY}" --pattern SOURCES-INDEX.tsv --dir old --clobber || true
+            gh release download "sources-${REL}" --repo "${GITHUB_REPOSITORY}" --pattern FAILED.txt --dir old --clobber || true
+            touch old/SOURCES-INDEX.tsv old/FAILED.txt
+            cut -f3 new-index.tsv > new-files.txt
+            grep -v '^#' old/SOURCES-INDEX.tsv | awk -F'\t' 'NR==FNR{n[$1]=1; next} !($3 in n)' new-files.txt - >> new-index.tsv
+            awk -v only=" ${ONLY} " '{ if (index(only, " " $1 " ") == 0) print }' old/FAILED.txt >> FAILED.txt
+          fi
+          { printf '# source package\tversion\tfile\tbytes\tsha256\n'; sort -u new-index.tsv; } > SOURCES-INDEX.tsv
+          sort -u -o FAILED.txt FAILED.txt
           gh release upload "sources-${REL}" SOURCES-INDEX.tsv --repo "${GITHUB_REPOSITORY}" --clobber
           {
             echo "## Sources for FloppaOS ${REL}"
