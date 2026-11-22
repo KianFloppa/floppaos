@@ -26,7 +26,9 @@ fi
 
 # A file the ISO's package or the user made stays as it is.
 write() {  # write <file> < content
-  if [ -e "$1" ] && ! head -n1 "$1" | grep -qxF "${MARK}"; then
+  # An empty file counts as ours (seen on a CachyOS install 2026-11-22: an empty 10-floppaos.conf was left
+  # alone, so the login screen stayed CachyOS's own).
+  if [ -s "$1" ] && ! head -n1 "$1" | grep -qxF "${MARK}"; then
     echo "Left $1 alone (not made by the Setup Pack)."
     cat > /dev/null
     return 0
