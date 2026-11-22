@@ -1,0 +1,27 @@
+# FloppaOS: Secure Boot support (decision 27). Lets FloppaOS start with Secure Boot on: shim (floppaos-shim)
+# starts GRUB, GRUB and the kernels are signed with a key made on the PC, and the key is confirmed once on a
+# blue screen at the next start. Set up by the installer's "Secure Boot" tick box or `floppaos-secureboot setup`;
+# pacman hooks sign new kernels and rebuild GRUB after updates. Does nothing until it is set up.
+# Sources: secureboot/ (see secureboot/README.md).
+pkgname=floppaos-secureboot
+pkgver=0.1
+pkgrel=1
+pkgdesc="FloppaOS: start FloppaOS with Secure Boot on (shim, signed GRUB and kernels, key confirmed once)"
+arch=('any')
+url="https://github.com/KianFloppa/floppaos"
+license=('GPL-3.0-or-later')
+depends=('bash' 'coreutils' 'util-linux' 'systemd' 'grub' 'efibootmgr' 'sbsigntools' 'mokutil' 'openssl' 'floppaos-shim')
+optdepends=('kdialog: the reminder at login until the key is confirmed'
+            'polkit: making a new code from the reminder')
+
+package() {
+  local root="${startdir}/../.."
+  install -Dm755 "${root}/secureboot/floppaos-secureboot.sh" "${pkgdir}/usr/bin/floppaos-secureboot"
+  install -Dm644 -t "${pkgdir}/usr/share/libalpm/hooks/" "${root}/secureboot/95-floppaos-secureboot-kernel.hook" \
+    "${root}/secureboot/95-floppaos-secureboot-boot.hook"
+  install -Dm644 "${root}/secureboot/floppaos-secureboot-check.service" \
+    "${pkgdir}/usr/lib/systemd/system/floppaos-secureboot-check.service"
+  install -Dm644 "${root}/secureboot/floppaos-secureboot-reminder.desktop" \
+    "${pkgdir}/etc/xdg/autostart/floppaos-secureboot-reminder.desktop"
+  install -Dm644 "${root}/CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"
+}

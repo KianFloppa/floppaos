@@ -1,0 +1,9 @@
+# FloppaOS: Calamares job that sets up Secure Boot support when the "Secure Boot" page's tick box is on.
+# Installed as /usr/lib/floppaos-installer/calamares-modules/floppasecureboot/ (settings.conf, modules-search).
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+type:       "job"
+name:       "floppasecureboot"
+interface:  "python"
+script:     "main.py"
+noconfig:   true

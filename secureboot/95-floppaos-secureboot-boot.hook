@@ -1,0 +1,14 @@
+# FloppaOS Secure Boot: after a GRUB or shim update, build and sign GRUB again and copy the new shim, so the
+# boot loader always has the newest fixes (shim refuses GRUB versions with known security holes).
+# Does nothing on PCs without FloppaOS Secure Boot support (floppaos-secureboot setup).
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = usr/lib/grub/x86_64-efi/*
+Target = usr/share/floppaos-shim/*
+
+[Action]
+Description = Updating the signed boot loader for Secure Boot (FloppaOS)...
+When = PostTransaction
+Exec = /usr/bin/floppaos-secureboot update

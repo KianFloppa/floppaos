@@ -118,6 +118,47 @@ PY
   rm -rf "${d}"
   [ "$(grep -v '^#' "${T}/etc/floppaos/setup-choices.conf" | tr '\n' ' ')" = "user=tester launcher=yes pin=no wine=yes " ]
 }
+floppasecureboot_step_test() {  # the "floppasecureboot" step with a stand-in for Calamares' API: off = nothing,
+  # on = runs "floppaos-secureboot setup --code-file F" in the new system, the code in F, and F deleted afterwards
+  local d; d="$(mktemp -d)"
+  cat > "${d}/libcalamares.py" <<'PY'
+import os
+class _GS:
+    def __init__(self, d): self.d = d
+    def contains(self, k): return k in self.d
+    def value(self, k): return self.d.get(k)
+calls = []
+class utils:
+    warning = debug = staticmethod(lambda m: None)
+    @staticmethod
+    def target_env_process_output(cmd, callback=None, *rest):
+        path = globalstorage.value("rootMountPoint") + cmd[-1]
+        calls.append((list(cmd), open(path).read().strip(), oct(os.stat(path).st_mode & 0o777)))
+        return 0
+globalstorage = None
+PY
+  python3 -I - "${d}" "${T}" <<'PY' || { rm -rf "${d}"; return 1; }
+import importlib.util, os, sys
+sys.path.insert(0, sys.argv[1]); import libcalamares
+root = sys.argv[2]
+spec = importlib.util.spec_from_file_location("m", root + "/usr/lib/floppaos-installer/calamares-modules/floppasecureboot/main.py")
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+for choice in (None, {"enabled": False, "code": "12345678"}, {"enabled": True, "code": "12ab"}):
+    libcalamares.globalstorage = libcalamares._GS({"rootMountPoint": root, "floppaos_secureboot": choice})
+    assert m.run() is None and libcalamares.calls == [], choice
+libcalamares.globalstorage = libcalamares._GS({"rootMountPoint": root, "floppaos_secureboot": {"enabled": True, "code": "48219063"}})
+assert m.run() is None
+assert libcalamares.calls == [(["floppaos-secureboot", "setup", "--code-file", "/root/.floppaos-secureboot-code"], "48219063", "0o600")], libcalamares.calls
+assert not os.path.exists(root + "/root/.floppaos-secureboot-code")
+PY
+  rm -rf "${d}"
+}
+secureboot_sign_test() {  # the image's signing tools sign and verify a copy of its kernel with a throwaway key
+  local d=/tmp/floppaos-sbtest ok=0
+  in_target bash -c "rm -rf ${d} && mkdir -p ${d} && cd ${d} && openssl req -new -x509 -newkey rsa:2048 -nodes -sha256 -days 1 -subj /CN=test/ -keyout k.key -out k.crt 2>/dev/null && cp /boot/vmlinuz-linux v && sbsign --key k.key --cert k.crt --output v.signed v 2>/dev/null && sbverify --cert k.crt v.signed && ! sbverify --cert k.crt v" || ok=1
+  rm -rf "${T}${d}"
+  return "${ok}"
+}
 no_link_named() { [ -z "$(find "${T}/etc/systemd/system" -type l -name "$1" -print -quit)" ]; }
 no_process_inside() {  # true when no running process has its root folder inside the copy
   local p r
@@ -176,6 +217,15 @@ check "installer shows the \"Floppa games\" page" bash -c "grep -q '^ *- notesqm
 check "installer runs the floppasetup step" bash -c "grep -q '^ *- floppasetup\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasetup/module.desc'"
 check "floppasetup step saves the choices for Floppa Setup" floppasetup_step_test
 check "Floppa Setup reads the installer's choices" grep -q '/etc/floppaos/setup-choices.conf' "${T}/usr/bin/floppa-setup"
+check "installer shows the \"Secure Boot\" page" bash -c "grep -q '^ *- notesqml@secureboot\$' '${T}/etc/calamares/settings.conf' && test -s '${T}/etc/calamares/branding/floppaos/secure-boot.qml'"
+check "installer runs the floppasecureboot step right after the boot loader" bash -c "grep -A1 '^ *- bootloader\$' '${T}/etc/calamares/settings.conf' | grep -q '^ *- floppasecureboot\$' && test -s '${T}/usr/lib/floppaos-installer/calamares-modules/floppasecureboot/module.desc'"
+check "floppasecureboot step: nothing without the tick, setup with the code in a root-only file that is removed" floppasecureboot_step_test
+check "Secure Boot tool, its update hooks and the start-up check are installed" bash -c "test -x '${T}/usr/bin/floppaos-secureboot' && test -s '${T}/usr/share/libalpm/hooks/95-floppaos-secureboot-kernel.hook' && test -s '${T}/usr/share/libalpm/hooks/95-floppaos-secureboot-boot.hook' && test -s '${T}/usr/lib/systemd/system/floppaos-secureboot-check.service'"
+check "shim and MokManager are Fedora's Microsoft-signed 16.1-7 files" bash -c "cd '${T}/usr/share/floppaos-shim' && echo '351e131d3c4a636704e9cae7d1296baf8a05beca9922cfebbfa48933c9bf1ad3  shimx64.efi
+ed4442fa88cccba3a9e6a32d21a8f4c56bf5aab184f1fb9aadde8d3a9d04dc27  mmx64.efi' | sha256sum -c --quiet"
+check "Secure Boot support is not set up until someone asks for it" absent /var/lib/floppaos-secureboot
+check "the image's tools sign and verify its kernel (sbsign, sbverify, openssl)" secureboot_sign_test
+check "mokutil is installed" test -x "${T}/usr/bin/mokutil"
 if [ "${WITH_INITRAMFS}" = "--initramfs" ]; then
   check "boot image built" test -s "${T}/boot/initramfs-linux.img"
 fi

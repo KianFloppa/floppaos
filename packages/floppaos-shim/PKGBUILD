@@ -1,0 +1,22 @@
+# FloppaOS: the Microsoft-signed boot loader "shim" (decision 27), taken unchanged from Fedora's package (the
+# same files the former Arch community package shim-signed used). Fedora's shim 16.1-7 carries two Microsoft signatures
+# (Microsoft Corporation UEFI CA 2011 and Microsoft UEFI CA 2023), so it starts on old and new PCs with Secure
+# Boot on. It then starts GRUB only if GRUB is signed by a key the PC owner confirmed (MokManager, mmx64.efi).
+# Used by floppaos-secureboot. Source: koji.fedoraproject.org, package shim-x64.
+pkgname=floppaos-shim
+pkgver=16.1+fedora+7
+pkgrel=1
+pkgdesc="FloppaOS: Microsoft-signed shim and MokManager from Fedora, for starting FloppaOS with Secure Boot on"
+arch=('any')
+url="https://github.com/rhboot/shim"
+license=('BSD-2-Clause')
+options=('!strip' '!debug')
+_v="${pkgver//+fedora+/-}"
+source=("https://kojipkgs.fedoraproject.org/packages/shim/${pkgver%%+*}/${pkgver##*+}/x86_64/shim-x64-${_v}.x86_64.rpm")
+sha512sums=('642f7bd66f9d420fed5d5686d968a2065af445b4e7ba3d27a0a4f5852aefadd1835c485968e7bdc7cea5f377095bd3efcc8636837e3059a19cfab1c777e218f0')
+
+package() {
+  local efi="${srcdir}/usr/lib/efi/shim/${_v}/EFI"
+  install -Dm644 -t "${pkgdir}/usr/share/${pkgname}/" "${efi}/fedora/shimx64.efi" "${efi}/fedora/mmx64.efi"
+  install -Dm644 "${startdir}/../../CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"
+}

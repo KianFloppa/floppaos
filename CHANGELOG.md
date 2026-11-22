@@ -28,6 +28,13 @@ been installed on real hardware yet (Phase 6).
   (`floppaos-theme-parts` 0.5, `floppaos-look` 0.11).
 - `install.sh` / `uninstall.sh` (Setup Pack, no admin rights), or the `floppaos-look` package.
 
+### Secure Boot
+- New installer page **Secure Boot**: one tick box, and FloppaOS starts with Secure Boot on, next to Windows. A
+  Microsoft-signed shim (Fedora's) starts GRUB; GRUB and the kernels are signed with a key made on the PC, which
+  is confirmed once on a blue screen at the next start with an 8-digit code. Kernel and GRUB updates are signed
+  automatically. A reminder after login shows the code until it is done. `floppaos-secureboot` sets it up on an
+  installed FloppaOS too (`secureboot/README.md`). The USB stick itself still needs Secure Boot off.
+
 ### Floppa Setup
 - Opens at first login until the Floppa Launcher is installed: checks the Floppa servers, the launcher, each
   game, that F2 is free for FloppaNet, and the graphics driver.

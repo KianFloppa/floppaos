@@ -45,6 +45,7 @@ GitHub Actions do the same: [`packages`](.github/workflows/packages.yml) on ever
 | `look/` | The look: global theme, FloppaOS Start menu, colours, theme parts (from their own projects) |
 | `setup/` | Floppa Setup (first-login helper for the Floppa games) |
 | `installer/` | Calamares settings, branding and FloppaOS's install steps |
+| `secureboot/` | Starting FloppaOS with Secure Boot on (shim, signed GRUB and kernels) |
 | `iso/` | The live image (Arch Linux's `releng` profile plus FloppaOS) |
 | `packages/` | Package recipes (`PKGBUILD`) |
 | `tools/` | Build, test and check scripts |

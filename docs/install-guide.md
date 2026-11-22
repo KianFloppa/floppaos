@@ -30,15 +30,21 @@ Update later: `cd floppaos && git pull && ./install.sh`. Undo: `./uninstall.sh` 
 1. **Get the ISO.** There is no public download before the first release. Build it yourself
    (`iso/README.md`) and check it against its `.sha256` file.
 2. **Start it** in a new virtual machine, for example in VirtualBox: type Arch Linux (64-bit), **UEFI on**,
-   6 GB memory, 4 cores, a new 20 GB disk, 3D acceleration on, the ISO in the optical drive.
+   6 GB memory, 4 cores, a new 20 GB disk, 3D acceleration on, the ISO in the optical drive. On a real PC:
+   switch **Secure Boot off** in the PC's settings first; the USB stick does not start with it on.
 3. **Install.** On the live desktop double-click **Install FloppaOS** (also pinned on the taskbar). Pick
    language, time zone and keyboard, then **Erase disk** (only the VM's own empty disk), then your name and
    password. On **Floppa games** tick what Floppa Setup should do after the first start (Floppa Launcher and
-   taskbar pin are ticked; Wine is not). Wait until it says it is done, close the installer and shut down.
+   taskbar pin are ticked; Wine is not). On **Secure Boot** tick the box if your PC needs Secure Boot (some Windows
+   games with anti-cheat do), and write the 8-digit code down. Wait until it says it is done, close the installer
+   and shut down.
 4. **First start.** Remove the ISO from the VM (VirtualBox: Settings → Storage → remove the disk image),
    start the VM, log in. Floppa Setup does what you ticked (it needs internet; offline it tries again at the
    next login) and shows what it did. There is no boot menu when FloppaOS is the only
    system; press **Esc** right after the maker's logo to see it (for example for the "Advanced options").
+5. **Secure Boot** (only if you ticked it): at the first start a blue screen appears. Press a key within 10
+   seconds, choose **Enroll MOK**, **Continue**, **Yes**, type the code at "Password:", choose **Reboot**. Then
+   switch Secure Boot back on in the PC's settings. Missed it? After login FloppaOS offers a new code.
 
 ## If something goes wrong
 

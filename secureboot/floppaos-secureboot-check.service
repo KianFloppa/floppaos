@@ -1,0 +1,11 @@
+# FloppaOS Secure Boot: once the key is confirmed on the blue screen, the one-time code is not needed any more.
+[Unit]
+Description=FloppaOS Secure Boot: forget the one-time code once the key is confirmed
+ConditionPathExists=/var/lib/floppaos-secureboot/enroll-code
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/floppaos-secureboot check
+
+[Install]
+WantedBy=multi-user.target

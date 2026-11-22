@@ -7,8 +7,8 @@ settings and branding (this folder, packaged as `packages/floppaos-installer`). 
 ## How it installs
 
 1. **Pages:** welcome (checks: 20 GiB disk, 2 GiB RAM, power), language and time zone, keyboard, disk
-   (erase disk, install alongside another system, or manual), user account, **Floppa games**, summary.
-   Nothing touches the disk before the user confirms on the summary page.
+   (erase disk, install alongside another system, or manual), user account, **Floppa games**, **Secure Boot**,
+   summary. Nothing touches the disk before the user confirms on the summary page.
 
    The "Floppa games" page (`calamares/branding/floppaos/floppa-games.qml`, shown by Calamares' notesqml
    module) has three tick boxes: install the Floppa Launcher (ticked), pin it to the taskbar (ticked), install
@@ -17,6 +17,14 @@ settings and branding (this folder, packaged as `packages/floppaos-installer`). 
    `/etc/floppaos/setup-choices.conf`; at that user's first login Floppa Setup does them once, without asking
    again (`setup/floppa-setup.py`; offline it says so and tries again at the next login). Other accounts get
    Floppa Setup's normal checklist.
+
+   The "Secure Boot" page (`calamares/branding/floppaos/secure-boot.qml`) has one tick box, "Start FloppaOS with
+   Secure Boot on" (not ticked). Ticked, it shows an 8-digit code and the four steps for the blue key-confirmation
+   screen at the next start. The step "Setting up Secure Boot" (`calamares-modules/floppasecureboot`, right after
+   the boot loader step) runs `floppaos-secureboot setup` in the new system: a key for this PC, GRUB and the
+   kernel signed with it, Fedora's Microsoft-signed shim in front of GRUB (see `secureboot/README.md`). The code
+   goes in a root-only file that is deleted right after, and never into the install log. If the setup fails, the
+   installation still finishes and FloppaOS starts with Secure Boot off.
 2. **Copy the live system** (`modules/unpackfs.conf`): Arch's live boot keeps the read-only system image
    mounted at `/run/archiso/airootfs`, also when it copied itself into RAM and unmounted the USB stick.
    The installer copies that image with rsync, so it needs no internet and installs exactly what was
@@ -71,6 +79,7 @@ password with the US layout (y and z swapped) and could not log in afterwards.
 | `calamares/modules/*.conf` | `/etc/calamares/modules/`: one file per step, each with a comment saying why |
 | `calamares/branding/floppaos/` | branding: logo, welcome banner, slideshow (`show.qml`), sidebar colours, the "Floppa games" page (`floppa-games.qml`) |
 | `calamares-modules/floppasetup/` | `/usr/lib/floppaos-installer/calamares-modules/floppasetup/`: FloppaOS's own step that saves the "Floppa games" choices |
+| `calamares-modules/floppasecureboot/` | `/usr/lib/floppaos-installer/calamares-modules/floppasecureboot/`: FloppaOS's own step that runs `floppaos-secureboot setup` when the "Secure Boot" box is ticked |
 | `art/*.svg`, `art/render.sh` | sources of the branding PNGs (FloppaOS logo: the caracal head) |
 | `target-cleanup.sh` | `/usr/lib/floppaos-installer/target-cleanup` |
 | `live-keyboard.sh` | `/usr/lib/floppaos-installer/live-keyboard` |
@@ -82,9 +91,10 @@ password with the US layout (y and z swapped) and could not log in afterwards.
 
 - `tools/test-installer-cleanup.sh <iso> <empty folder> --initramfs` unpacks an ISO's system image, does what
   the installer does before the cleanup (remove the live user, create a user, write a German keyboard
-  layout), runs `target-cleanup.sh` inside it (chroot) and checks 58 things (also the boot screen theme,
+  layout), runs `target-cleanup.sh` inside it (chroot) and checks 66 things (also the boot screen theme,
   `grub-quiet.sh` with and without a Windows entry, the "Floppa games" page and the step that saves its
-  choices), then builds the boot image.
+  choices, the "Secure Boot" page and step, Fedora's shim files, and signing the image's kernel with a
+  throwaway key), then builds the boot image.
   The `iso` workflow runs it on every new image **before** uploading it. First run 2026-11-21 against the
   ISO of 2026-11-21 (3rd build): all checks passed, boot image built.
 - All `calamares/modules/*.conf` validate against the schemas shipped with Calamares 3.4.2 and 3.4.3.

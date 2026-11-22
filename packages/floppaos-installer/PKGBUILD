@@ -1,9 +1,10 @@
-# FloppaOS: the installer. Calamares settings, FloppaOS branding and the "Floppa games" page (/etc/calamares),
-# the "Install FloppaOS" launcher, the live keyboard helper, the step that saves the "Floppa games" choices
-# and the script that turns the copied live system into a normal installed system. Live ISO only: the installer removes this package and Calamares from what it installs.
+# FloppaOS: the installer. Calamares settings, FloppaOS branding and the "Floppa games" and "Secure Boot" pages
+# (/etc/calamares), the "Install FloppaOS" launcher, the live keyboard helper, the steps that save the "Floppa
+# games" choices and set up Secure Boot (runs floppaos-secureboot in the new system), and the script that turns
+# the copied live system into a normal installed system. Live ISO only: the installer removes this package and Calamares from what it installs.
 # Sources: installer/ (see installer/README.md).
 pkgname=floppaos-installer
-pkgver=0.10
+pkgver=0.11
 pkgrel=1
 pkgdesc="FloppaOS installer: Calamares settings, branding and helpers (live ISO only)"
 arch=('any')
@@ -26,6 +27,8 @@ package() {
   local m="${pkgdir}/usr/lib/floppaos-installer/calamares-modules"
   install -Dm644 "${root}/installer/calamares-modules/floppasetup/module.desc" "${m}/floppasetup/module.desc"
   install -Dm644 "${root}/installer/calamares-modules/floppasetup/main.py" "${m}/floppasetup/main.py"
+  install -Dm644 "${root}/installer/calamares-modules/floppasecureboot/module.desc" "${m}/floppasecureboot/module.desc"
+  install -Dm644 "${root}/installer/calamares-modules/floppasecureboot/main.py" "${m}/floppasecureboot/main.py"
   install -Dm755 "${root}/installer/floppaos-install.sh" "${pkgdir}/usr/bin/floppaos-install"
   install -Dm644 "${root}/installer/floppaos-install.desktop" "${pkgdir}/usr/share/applications/floppaos-install.desktop"
   install -Dm644 "${root}/CREDITS.md" "${pkgdir}/usr/share/licenses/${pkgname}/CREDITS.md"

@@ -79,6 +79,23 @@ latest="$(curl -fsSL -m 30 'https://salsa.debian.org/api/v4/projects/installer-t
 check ckbcomp "${ours}" "${latest}" "https://salsa.debian.org/installer-team/console-setup/-/tags/${latest}" \
   packages/ckbcomp/PKGBUILD version
 
+# shim (Secure Boot, decision 27): Fedora's Microsoft-signed build; Fedora's package database (mdapi) says which
+# signed shim-x64 its development branch ships now.
+ours="$(field packages/floppaos-shim/PKGBUILD pkgver)"
+latest="$(curl -fsSL -m 30 https://mdapi.fedoraproject.org/rawhide/pkg/shim-x64 2>/dev/null \
+  | json "'%s+fedora+%s' % (d['version'], d['release']) if d.get('version') else ''" 2>/dev/null || true)"
+check shim "${ours}" "${latest}" "https://koji.fedoraproject.org/koji/packageinfo?packageID=14502" \
+  packages/floppaos-shim/PKGBUILD version
+
+# SBAT: shim refuses GRUB generations that its revocation list names. secureboot/floppaos-secureboot.sh writes
+# the generation that matches the installed GRUB version; a newer revocation needs a GRUB with the fix and a new
+# line in that table.
+ours="$(sed -n 's/.*for v in "\([0-9.]*\) \([0-9]*\)".*/\2/p' "${ROOT}/secureboot/floppaos-secureboot.sh" | head -n1)"
+latest="$(curl -fsSL -m 30 https://raw.githubusercontent.com/rhboot/shim/main/SbatLevel_Variable.txt 2>/dev/null \
+  | sed -n 's/^grub,\([0-9]\+\)$/\1/p' | sort -n | tail -n1 || true)"
+check "sbat-grub-generation" "${ours}" "${latest}" "https://github.com/rhboot/shim/blob/main/SbatLevel_Variable.txt" \
+  secureboot/floppaos-secureboot.sh version
+
 # Pinned, reviewed commits of theme parts: any new commit is news (it gets reviewed before we move the pin).
 #   Fluent: the icons (decision 24). Willow: window decoration (its Plasma 6 version lives on the branch
 #   plasma-6). WinSur: cursors. Utterly-Round: Plasma style.

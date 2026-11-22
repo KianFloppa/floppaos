@@ -17,6 +17,7 @@ FloppaOS's look is built on other people's open-source work. Thank you.
 | Part | Project | Author | Licence | Used how |
 |---|---|---|---|---|
 | Graphical installer | [Calamares](https://codeberg.org/Calamares/calamares) 3.4.3 | The Calamares team | GPL-3.0-or-later | Built unchanged from the release tarball (`packages/calamares`); settings and branding in `installer/` are our own |
+| Secure Boot loader | [shim](https://github.com/rhboot/shim) 16.1, Fedora's build 16.1-7 (`shimx64.efi`, MokManager `mmx64.efi`), signed by Microsoft | The shim authors; built and submitted for signing by the Fedora Project | BSD-2-Clause | Files taken unchanged from Fedora's `shim-x64` package (`packages/floppaos-shim`, checksum-pinned) |
 | Install slideshow | `installer/calamares/branding/floppaos/show.qml`, structure from Calamares' sample slideshow | Teo Mrnjavac, Adriaan de Groot (Calamares), changed by FloppaOS | GPL-3.0-or-later | Text, colours and timing are ours |
 | Live system base | Arch Linux's `releng` archiso profile | Arch Linux | GPL-3.0-or-later | Copied at build time by `iso/build.sh`; boot menu texts changed to FloppaOS |
 | Boot screen spinner and settings | [Plymouth](https://gitlab.freedesktop.org/plymouth/plymouth)'s `spinner` pictures and `bgrt` theme (Arch package) | The Plymouth authors | GPL-2.0-or-later | Copied into FloppaOS's own theme by `floppaos-defaults` (ISO only); the Arch-logo watermark is replaced by the FloppaOS mark |

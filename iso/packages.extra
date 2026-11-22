@@ -52,6 +52,12 @@ floppaos-defaults
 calamares
 floppaos-installer
 os-prober
+# Secure Boot support (decision 27): the Microsoft-signed shim from Fedora, our tool, and Arch's signing tools.
+# Stays on installed systems; it does nothing until the installer's "Secure Boot" box or the tool sets it up.
+floppaos-shim
+floppaos-secureboot
+sbsigntools
+mokutil
 
 # Gaming set (README Phase 5): FPS/performance overlay (64- and 32-bit), the gamescope game compositor, GameMode for
 # 32-bit games, Vulkan diagnostics (vulkaninfo), and compressed swap in RAM (floppaos-defaults configures it).

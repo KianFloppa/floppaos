@@ -1,0 +1,12 @@
+# FloppaOS Secure Boot: sign new kernels with this PC's key (runs after mkinitcpio copied them to /boot).
+# Does nothing on PCs without FloppaOS Secure Boot support (floppaos-secureboot setup).
+[Trigger]
+Type = Path
+Operation = Install
+Operation = Upgrade
+Target = usr/lib/modules/*/vmlinuz
+
+[Action]
+Description = Signing the kernel for Secure Boot (FloppaOS)...
+When = PostTransaction
+Exec = /usr/bin/floppaos-secureboot sign-kernels

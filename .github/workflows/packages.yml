@@ -12,6 +12,7 @@ on:
       - 'look/**'
       - 'setup/**'
       - 'installer/**'
+      - 'secureboot/**'
       - 'tools/build-packages.sh'
       - 'tools/icon-audit.py'
       - 'CREDITS.md'
