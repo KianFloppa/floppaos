@@ -20,6 +20,12 @@ version in the image: the `PKGBUILD`, Arch's patches and all upstream source fil
 checksums in the `PKGBUILD`. To build a package from it, unpack it on Arch Linux and run `makepkg` in the folder.
 Archives over 1.9 GB are split into `.part00`, `.part01`, ...; join them with `cat` first.
 
+**When a package is missing from the archive.** Upstream servers come and go: some block cloud servers, some
+move or disappear. The archive tries copies first (GNU's mirrors, the Internet Archive, Arch Linux's own source
+archives, each checked against the recipe's checksums). Packages it still could not archive are listed in
+`FAILED.txt` in the source release. Their source is covered by the written offer below; where it was at release
+time is in the release notes.
+
 The FloppaOS image is built with [`iso/build.sh`](../iso/build.sh) from Arch Linux's packages and FloppaOS's
 own; the GitHub Action [`iso`](../.github/workflows/iso.yml) shows every step.
 

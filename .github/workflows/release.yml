@@ -4,7 +4,8 @@
 # Checks first, and stops if anything is off:
 #   - docs/releases/<version>.md exists (the release notes) and VERSION says <version>
 #   - floppaos.pages.dev/download/ serves the image and its .sha256, and that checksum is the one in the draft
-#   - the release sources-<version> has its SOURCES-INDEX.tsv and no FAILED.txt (the source code offer)
+#   - the release sources-<version> has its SOURCES-INDEX.tsv and no FAILED.txt (the source code offer); with
+#     accept_failed, a FAILED.txt is allowed if the notes name every package in it
 # Then it writes the notes into the draft v<version> and publishes it (a pre-release while the version says
 # "preview").
 name: release
@@ -15,6 +16,11 @@ on:
       release:
         description: 'Release version to publish, e.g. 0.1.0-preview'
         required: true
+      accept_failed:
+        description: 'Publish even though sources-<version> has a FAILED.txt (the notes must list those packages)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: write
@@ -24,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REL: ${{ inputs.release }}
+      ACCEPT_FAILED: ${{ inputs.accept_failed }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v6
@@ -45,7 +52,14 @@ jobs:
           grep -q "${served}" "${notes}" || { echo "The notes do not name the checksum ${served}"; exit 1; }
           assets=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/sources-${REL}" -q '[.assets[].name] | join(" ")')
           [[ " ${assets} " == *" SOURCES-INDEX.tsv "* ]] || { echo "sources-${REL} has no SOURCES-INDEX.tsv yet"; exit 1; }
-          [[ " ${assets} " != *" FAILED.txt "* ]] || { echo "sources-${REL} lists failed packages (FAILED.txt)"; exit 1; }
+          if [[ " ${assets} " == *" FAILED.txt "* ]]; then
+            [ "${ACCEPT_FAILED}" = true ] || { echo "sources-${REL} lists failed packages (FAILED.txt)"; exit 1; }
+            gh release download "sources-${REL}" --repo "${GITHUB_REPOSITORY}" --pattern FAILED.txt --dir /tmp/failed
+            while read -r pkg _; do
+              grep -q "${pkg}" "${notes}" || { echo "The notes do not name ${pkg} from FAILED.txt"; exit 1; }
+            done < /tmp/failed/FAILED.txt
+            echo "FAILED.txt accepted: every package in it is named in the notes"
+          fi
           echo "All checks passed: ${name}, sha256 ${served}"
       - name: Publish
         run: |
