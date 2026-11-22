@@ -111,6 +111,10 @@ sed -i 's|^file_permissions=(|file_permissions=(\n  ["/home/floppa"]="1000:1000:
 if [ -n "${FLOPPAOS_RELEASE:-}" ]; then
   [[ ${FLOPPAOS_RELEASE} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${FLOPPAOS_RELEASE}"; exit 1; }
   [ "${FLOPPAOS_RELEASE}" = "$(cat "${ROOT}/VERSION")" ] || { echo "Release ${FLOPPAOS_RELEASE} does not match VERSION ($(cat "${ROOT}/VERSION"))"; exit 1; }
+  # The installer shows the version too ("Welcome to the FloppaOS 0.1.2 preview installer"); 0.1.1-preview
+  # still said 0.1.0 because this file was forgotten, so a release build stops when it does not match.
+  grep -q "^    version: *\"${FLOPPAOS_RELEASE/-/ }\"$" "${ROOT}/installer/calamares/branding/floppaos/branding.desc" \
+    || { echo "installer/calamares/branding/floppaos/branding.desc does not say version \"${FLOPPAOS_RELEASE/-/ }\""; exit 1; }
   sed -i "s/^iso_version=.*/iso_version=\"${FLOPPAOS_RELEASE}\"/" "${PROFILE}/profiledef.sh"
   grep -q "^iso_version=\"${FLOPPAOS_RELEASE}\"$" "${PROFILE}/profiledef.sh" || { echo "iso_version not set"; exit 1; }
 fi

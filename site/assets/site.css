@@ -211,6 +211,7 @@ pre code { font-size: inherit; }
   background: var(--panel);
 }
 .warning p { margin: 0; }
+.warning p + p { margin-top: .6rem; }
 
 .notes { max-width: var(--measure); margin: 0; padding-left: 1.2rem; }
 .notes li { margin-bottom: .7rem; }

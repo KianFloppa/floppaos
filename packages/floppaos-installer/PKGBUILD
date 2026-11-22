@@ -5,7 +5,7 @@
 # the copied live system into a normal installed system. Live ISO only: the installer removes this package and Calamares from what it installs.
 # Sources: installer/ (see installer/README.md).
 pkgname=floppaos-installer
-pkgver=0.14
+pkgver=0.15
 pkgrel=1
 pkgdesc="FloppaOS installer: Calamares settings, branding and helpers (live ISO only)"
 arch=('any')

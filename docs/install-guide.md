@@ -3,6 +3,8 @@
 Two ways to get FloppaOS. The ISO is a preview (0.1.1-preview), tested in virtual machines so far
 (see `CHANGELOG.md`).
 
+> **FloppaOS currently only supports AMD graphics cards (Radeon). NVIDIA and Intel come later.**
+>
 > **No warranty.** FloppaOS is a free hobby project made by one person. Installing it, or the Setup Pack, is at
 > your own risk. Back up your files first, especially if you install FloppaOS next to Windows.
 

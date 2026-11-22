@@ -22,7 +22,7 @@
 <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/bricolage.woff2?v=1" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/site.css?v=3">
+<link rel="stylesheet" href="/assets/site.css?v=4">
 <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","@id":"https://floppaos.pages.dev/#website","url":"https://floppaos.pages.dev/","name":"FloppaOS","inLanguage":"en","publisher":{"@id":"https://kianfloppa.pages.dev/#kian"}},{"@context":"https://schema.org","@type":"Person","@id":"https://kianfloppa.pages.dev/#kian","name":"KianFloppa","url":"https://kianfloppa.pages.dev/home/"},{"@context":"https://schema.org","@type":"SoftwareApplication","name":"FloppaOS","url":"https://floppaos.pages.dev/","description":"A free, open-source gaming Linux based on Arch Linux, with a Windows 11-style desktop on pure black.","applicationCategory":"Operating system","operatingSystem":"Linux","isAccessibleForFree":true,"license":"https://www.gnu.org/licenses/gpl-3.0.html","image":"https://floppaos.pages.dev/assets/start-menu.jpg","author":{"@id":"https://kianfloppa.pages.dev/#kian"}}]</script>
 </head>
 <body id="top">
@@ -33,7 +33,7 @@
     <img class="hero-logo" src="/assets/logo.svg" alt="" width="88" height="88">
     <h1>FloppaOS</h1>
     <p class="lede">A free gaming Linux with the desktop you know from Windows&nbsp;11: a start button, a start menu with search, a taskbar and the same keyboard shortcuts. Everything is pure black, made for OLED screens.</p>
-    <p class="status"><span class="dot" aria-hidden="true"></span>Version 0.1.1 preview. Tested in virtual machines so far.</p>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Version 0.1.1 preview. <strong>Currently only for AMD graphics cards.</strong></p>
     <p class="actions">
       <a class="button primary" href="#download">Download the preview</a>
       <a class="button" href="#try">Try the Setup Pack</a>
@@ -88,6 +88,7 @@ cd floppaos
     <h2 id="download-h">Download the FloppaOS ISO</h2>
     <div class="warning" role="note">
       <p><strong>No warranty.</strong> FloppaOS is a free hobby project made by one person. Installing it is at your own risk. Back up your files first, especially if you install FloppaOS next to Windows.</p>
+      <p><strong>AMD graphics cards only, for now.</strong> NVIDIA and Intel graphics are not supported yet.</p>
     </div>
     <p>Version 0.1.1 preview, November 2026. It has been tested in virtual machines, not yet on many real PCs. What is in it: <a href="https://github.com/KianFloppa/floppaos/releases/tag/v0.1.1-preview">release notes</a>.</p>
     <p class="actions"><a class="button primary" href="/download/floppaos-0.1.1-preview-x86_64.iso" download>Download the ISO (2.5 GB)</a></p>
@@ -97,7 +98,7 @@ cd floppaos
       <div><dt>PC</dt><dd>64-bit, starts with UEFI</dd></div>
       <div><dt>Memory</dt><dd>2 GB to install, 8 GB or more for games</dd></div>
       <div><dt>Disk</dt><dd>20 GB free, more for games</dd></div>
-      <div><dt>Graphics</dt><dd>AMD Radeon. Intel and NVIDIA come later.</dd></div>
+      <div><dt>Graphics</dt><dd>AMD Radeon only, for now. NVIDIA and Intel come later.</dd></div>
       <div><dt>USB stick</dt><dd>4 GB or more</dd></div>
     </dl>
   </section>
@@ -121,9 +122,8 @@ cd floppaos
 </main>
 
 <footer class="footer">
-  <p class="legal-links"><a href="https://mein.online-impressum.de/kianfloppa/">Legal imprint</a> <a href="/datenschutz/">Privacy policy</a> <a href="https://floppaland.com/security/">Security</a></p>
+  <p class="legal-links"><a href="https://mein.online-impressum.de/kianfloppa/">Legal imprint</a> <a href="/datenschutz/">Privacy policy</a> <a href="https://floppaland.com/security/">Security</a> <a href="https://kianfloppa.pages.dev/">My sites</a></p>
   <p>FloppaOS is not affiliated with Microsoft, Arch Linux or CachyOS. Windows is a trademark of Microsoft Corporation.</p>
-  <p class="sites"><span>My sites:</span> <a href="https://kianfloppa.pages.dev/">KianFloppa</a> <a href="https://floppaland.com/">Floppaland</a> <a href="https://felony.floppaland.com/">Floppa Felony</a> <a href="https://floppamining.com/">Floppa Mining</a> <a href="https://floppaos.pages.dev/" aria-current="page">FloppaOS</a></p>
 </footer>
 
 <nav class="taskbar" aria-label="Sections">

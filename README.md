@@ -9,6 +9,8 @@ Download: [floppaos.pages.dev](https://floppaos.pages.dev/#download) (SHA-256 `c
 [v0.1.1-preview](https://github.com/KianFloppa/floppaos/releases/tag/v0.1.1-preview); source code of every
 package: [docs/source-code.md](docs/source-code.md). What has changed so far: [CHANGELOG.md](CHANGELOG.md).
 
+> **FloppaOS currently only supports AMD graphics cards (Radeon). NVIDIA and Intel come later.**
+>
 > **No warranty.** FloppaOS is a free hobby project made by one person. Installing it, or the Setup Pack, is at
 > your own risk. Back up your files first, especially if you install FloppaOS next to Windows. The licence says
 > the same in its sections 15 and 16 ([LICENSE](LICENSE)).

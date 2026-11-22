@@ -40,6 +40,13 @@ Pane {
         Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
+            font.bold: true
+            text: "FloppaOS currently only supports AMD graphics cards (Radeon). With an NVIDIA or Intel graphics "
+                + "card, wait for a later version."
+        }
+        Label {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
             opacity: 0.75
             text: "This is a preview. It has been tested in virtual machines, not yet on many real PCs."
         }
