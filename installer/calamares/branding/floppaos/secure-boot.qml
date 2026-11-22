@@ -84,7 +84,7 @@ Pane {
                 Layout.topMargin: 4
                 wrapMode: Text.WordWrap
                 textFormat: Text.StyledText
-                text: "At the first start of FloppaOS a blue screen appears (\"Perform MOK management\"):<br>"
+                text: "At the first start of FloppaOS a blue screen appears (\"Press any key to perform MOK management\"):<br>"
                     + "1. Press any key within 10 seconds.<br>"
                     + "2. Choose <b>Enroll MOK</b>, then <b>Continue</b>, then <b>Yes</b>.<br>"
                     + "3. At \"Password:\" type the code (only the 8 digits) and press Enter.<br>"

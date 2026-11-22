@@ -216,7 +216,7 @@ enroll() {  # enroll [code file]: ask shim to add this PC's key at the next star
   fi
   say ""
   say "One step left, at the next start of the PC:"
-  say "  1. A blue screen appears (\"Perform MOK management\"). Press any key within 10 seconds."
+  say "  1. A blue screen appears (\"Press any key to perform MOK management\"). Press any key within 10 seconds."
   say "  2. Choose \"Enroll MOK\", then \"Continue\", then \"Yes\"."
   say "  3. At \"Password:\" type the code ${code:0:4} ${code:4:4} (only the 8 digits) and press Enter."
   say "  4. Choose \"Reboot\". Then FloppaOS also starts with Secure Boot on."
@@ -284,7 +284,7 @@ cmd_remind() {  # autostart at login, as the user: until the key is confirmed, s
   case "${state}" in
     enrolled) exit 0 ;;
     pending)
-      kdialog --title "Secure Boot: one step left" --msgbox "When the PC starts the next time, a blue screen appears (\"Perform MOK management\").
+      kdialog --title "Secure Boot: one step left" --msgbox "When the PC starts the next time, a blue screen appears (\"Press any key to perform MOK management\").
 
 1. Press any key within 10 seconds.
 2. Choose \"Enroll MOK\", then \"Continue\", then \"Yes\".

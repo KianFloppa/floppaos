@@ -10,3 +10,4 @@ if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ]; then
   (python3 "${HOME}/.local/share/floppaos/floppa-setup.py" --first-run >/dev/null 2>&1 &)
 fi
 echo "FloppaOS Setup Pack $(cat "${DIR}/VERSION" 2>/dev/null || echo "") installed."
+echo "Optional, needs your password: a black login screen too: sudo ${DIR}/look/login-screen.sh"

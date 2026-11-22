@@ -25,7 +25,7 @@ firmware (Microsoft keys) -> shimx64.efi (Microsoft-signed) -> grubx64.efi (this
 
 The installer's **Secure Boot** page has one tick box. When it is ticked the page shows the code and these steps:
 
-1. At the first start of FloppaOS a blue screen appears ("Perform MOK management"). Press any key within 10 seconds.
+1. At the first start of FloppaOS a blue screen appears ("Press any key to perform MOK management"). Press any key within 10 seconds.
 2. Choose **Enroll MOK**, then **Continue**, then **Yes**.
 3. At "Password:" type the code (only the 8 digits) and press Enter.
 4. Choose **Reboot**. Then turn Secure Boot back on in the PC's settings (UEFI).

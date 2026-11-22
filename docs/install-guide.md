@@ -22,6 +22,7 @@ Two ways to get FloppaOS. Both are for testing until the first release (see `CHA
    **Floppa Setup** opens. Tick what you want and press the button: it installs the Floppa Launcher and pins
    it to the taskbar. The launcher then installs the games.
 4. **Log out and back in once**, so all Windows shortcuts work.
+5. **Optional:** a black login screen too (asks for your password): `sudo ./look/login-screen.sh`.
 
 Update later: `cd floppaos && git pull && ./install.sh`. Undo: `./uninstall.sh` (back to KDE's own look).
 
