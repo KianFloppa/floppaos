@@ -1,0 +1,98 @@
+# Archives the source code of every copyleft package (GPL, LGPL, AGPL, MPL, EPL, CDDL, EUPL) in a FloppaOS
+# release into the GitHub release sources-<version>, for the source code offer (docs/source-code.md).
+#
+# Called by iso.yml after a release build, or started by hand (Actions -> sources -> Run workflow) to redo it.
+# The release sources-<version> must already hold sources.tsv (iso.yml puts it there). Eight runners share the
+# work; each package is uploaded right after it is made, so a runner's disk never holds more than one. Running it
+# again replaces the files (--clobber). Takes about an hour; free, because this repository is public.
+name: sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release version, e.g. 0.1.0-preview (its release sources-<version> must hold sources.tsv)'
+        required: true
+  workflow_call:
+    inputs:
+      release:
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sources-${{ inputs.release }}
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    container:
+      image: archlinux:base-devel
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    env:
+      REL: ${{ inputs.release }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Tools
+        run: pacman -Syu --noconfirm --needed git github-cli mercurial subversion   # the last two: the few sources kept in hg or svn
+      - uses: actions/checkout@v6
+      - name: Package list
+        run: |
+          set -euo pipefail
+          [[ ${REL} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${REL}"; exit 1; }
+          gh release download "sources-${REL}" --repo "${GITHUB_REPOSITORY}" --pattern sources.tsv --dir /tmp/list --clobber
+          echo "$(grep -vc '^#' /tmp/list/sources.tsv) source packages in the image"
+      - name: Archive and upload the sources (shard ${{ matrix.shard }} of 8)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          UPLOAD_TO="sources-${REL}" bash tools/archive-sources.sh /tmp/list/sources.tsv /tmp/out "${SHARD}" 8
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: sources-index-${{ matrix.shard }}
+          path: |
+            /tmp/out/index-*.tsv
+            /tmp/out/failed-*.txt
+          retention-days: 7
+
+  index:
+    needs: archive
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      REL: ${{ inputs.release }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: sources-index-*
+          path: parts
+          merge-multiple: true
+      - name: Index and failures
+        run: |
+          set -euo pipefail
+          [[ ${REL} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${REL}"; exit 1; }
+          { printf '# source package\tversion\tfile\tbytes\tsha256\n'; cat parts/index-*.tsv | sort; } > SOURCES-INDEX.tsv
+          cat parts/failed-*.txt | sort > FAILED.txt || true
+          gh release upload "sources-${REL}" SOURCES-INDEX.tsv --repo "${GITHUB_REPOSITORY}" --clobber
+          {
+            echo "## Sources for FloppaOS ${REL}"
+            echo
+            echo "- Archived: $(($(wc -l < SOURCES-INDEX.tsv) - 1)) files, $(awk -F'\t' 'NR>1{s+=$4} END{printf "%.1f GB", s/1e9}' SOURCES-INDEX.tsv)"
+            echo "- Failed: $(wc -l < FAILED.txt)"
+            if [ -s FAILED.txt ]; then echo; echo '```'; cat FAILED.txt; echo '```'; fi
+          } >> "${GITHUB_STEP_SUMMARY}"
+          if [ -s FAILED.txt ]; then
+            gh release upload "sources-${REL}" FAILED.txt --repo "${GITHUB_REPOSITORY}" --clobber
+          else
+            gh release delete-asset "sources-${REL}" FAILED.txt --repo "${GITHUB_REPOSITORY}" --yes 2>/dev/null || true
+          fi

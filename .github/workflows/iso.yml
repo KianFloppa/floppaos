@@ -1,11 +1,25 @@
 # Builds the FloppaOS ISO. Started by hand (Actions -> iso -> Run workflow); it takes about 15 minutes.
-# The run keeps the build report (size, checksum, package list) on GitHub. The ISO itself goes to a private
-# Cloudflare R2 bucket (iso/README.md "Downloads"). This repository's runs are public, so the summary shows no
-# download link. Only the newest 3 images are kept, so the bucket stays inside R2's free 10 GB.
+# The run keeps the build report (size, checksum, package list) on GitHub.
+#
+# Test build ("release" left empty): the ISO goes to the private folder iso/ of the Cloudflare R2 bucket
+# (iso/README.md "Downloads"). This repository's runs are public, so the summary shows no download link. Only
+# the newest 3 test images are kept, so the bucket stays inside R2's free 10 GB.
+#
+# Release build ("release" = the version in the file VERSION, e.g. 0.1.0-preview): the ISO is named
+# floppaos-<version>-x86_64.iso and goes to the folder release/ of the bucket, which floppaos.pages.dev/download/
+# serves to everyone (functions/download/). The run also makes the draft GitHub release v<version> (checksum and
+# package lists) and the release sources-<version>, and then archives the source code of every copyleft package
+# there (sources.yml, docs/source-code.md). Publishing the draft and linking the download on the website is done
+# by hand after the image has been tested (iso/README.md "Releases").
 name: iso
 
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release version (must match the file VERSION, e.g. 0.1.0-preview). Empty: a private test build.'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -27,6 +41,10 @@ jobs:
   iso:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: write   # release builds make the GitHub releases v<version> and sources-<version>
+    outputs:
+      release: ${{ steps.release.outputs.release }}
     container:
       image: archlinux:base-devel
       options: --privileged
@@ -34,6 +52,18 @@ jobs:
       - name: Tools
         run: pacman -Syu --noconfirm --needed git archiso python librsvg plymouth grub noto-fonts  # the last four: floppaos-defaults (boot screen, boot menu theme)
       - uses: actions/checkout@v6
+      - name: Release or test build
+        id: release
+        env:
+          REL: ${{ inputs.release }}
+        run: |
+          set -euo pipefail
+          if [ -n "${REL}" ]; then
+            [[ ${REL} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${REL}"; exit 1; }
+            [ "${REL}" = "$(cat VERSION)" ] || { echo "Release ${REL} does not match VERSION ($(cat VERSION))"; exit 1; }
+            echo "Release build ${REL}"
+          fi
+          echo "release=${REL}" >> "${GITHUB_OUTPUT}"
       - uses: actions/cache@v5
         with:
           path: /var/cache/floppaos-built
@@ -42,6 +72,8 @@ jobs:
       - name: Build FloppaOS packages
         run: bash tools/build-packages.sh /tmp/floppaos-repo /var/cache/floppaos-built
       - name: Build ISO
+        env:
+          FLOPPAOS_RELEASE: ${{ steps.release.outputs.release }}
         run: |
           set -euo pipefail
           OUT="${PWD}/out" bash iso/build.sh /tmp/floppaos-repo 2>&1 | tee build.log
@@ -55,6 +87,12 @@ jobs:
           cd ..
           # mkarchiso -r deletes its work folder, so read the package list that it writes into the ISO
           bsdtar -xOf out/*.iso arch/pkglist.x86_64.txt > report/packages.txt || echo 'package list not found' > report/packages.txt
+          # Packages with their source package and licences, for the source code offer (docs/source-code.md)
+          bsdtar -xOf out/*.iso arch/x86_64/airootfs.sfs > /tmp/airootfs.sfs
+          unsquashfs -q -d /tmp/pkgdb /tmp/airootfs.sfs var/lib/pacman/local > /dev/null
+          rm -f /tmp/airootfs.sfs
+          python3 tools/list-iso-packages.py /tmp/pkgdb/var/lib/pacman/local report
+          rm -rf /tmp/pkgdb
           tail -n 200 build.log > report/build-log-tail.txt
           cat report/files.txt report/sha256.txt
           echo "Packages in the image: $(wc -l < report/packages.txt)"
@@ -65,9 +103,10 @@ jobs:
           set -euo pipefail
           bash tools/test-installer-cleanup.sh out/*.iso /tmp/installer-test --initramfs 2>&1 | tee report/installer-test.txt
           rm -rf --one-file-system /tmp/installer-test
-      - name: Upload the ISO to Cloudflare R2 (keeps the newest 3)
+      - name: Upload the ISO to Cloudflare R2 (test builds keep the newest 3)
         if: env.R2_ACCOUNT_ID != '' && env.R2_BUCKET != '' && env.R2_ACCESS_KEY_ID != '' && env.R2_SECRET_ACCESS_KEY != ''
         env:
+          REL: ${{ steps.release.outputs.release }}
           RCLONE_CONFIG_R2_TYPE: s3
           RCLONE_CONFIG_R2_PROVIDER: Cloudflare
           RCLONE_CONFIG_R2_REGION: auto
@@ -81,6 +120,19 @@ jobs:
           iso="$(ls out/*.iso | head -n 1)"
           name="$(basename "${iso}")"
           (cd out && sha256sum "${name}" > "${name}.sha256")
+          if [ -n "${REL}" ]; then
+            # Release: the public folder, never cleaned up by test builds
+            rclone copyto "${iso}" "r2:${R2_BUCKET}/release/${name}" --s3-chunk-size 64M --s3-upload-concurrency 8 --stats-one-line --stats 30s -v
+            rclone copyto "out/${name}.sha256" "r2:${R2_BUCKET}/release/${name}.sha256"
+            {
+              echo "## FloppaOS ${REL}"
+              echo
+              echo "- File: \`${name}\` ($(du -h "${iso}" | cut -f1)), at https://floppaos.pages.dev/download/${name}"
+              echo "- sha256: \`$(cut -d' ' -f1 "out/${name}.sha256")\`"
+              echo "- Draft release v${REL} and source release sources-${REL} are made next."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
           rclone copyto "${iso}" "r2:${R2_BUCKET}/iso/${name}" --s3-chunk-size 64M --s3-upload-concurrency 8 --stats-one-line --stats 30s -v
           rclone copyto "out/${name}.sha256" "r2:${R2_BUCKET}/iso/${name}.sha256"
           # The file names carry the date (floppaos-YYYY.MM.DD-x86_64.iso), so sorting puts the oldest first.
@@ -100,10 +152,52 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
       - name: No upload
         if: env.R2_ACCOUNT_ID == '' || env.R2_BUCKET == '' || env.R2_ACCESS_KEY_ID == '' || env.R2_SECRET_ACCESS_KEY == ''
-        run: echo "R2 is not set up yet (iso/README.md \"Downloads\"), so the ISO was built but not uploaded." >> "${GITHUB_STEP_SUMMARY}"
+        run: |
+          echo "R2 is not set up yet (iso/README.md \"Downloads\"), so the ISO was built but not uploaded." >> "${GITHUB_STEP_SUMMARY}"
+          if [ -n "${{ steps.release.outputs.release }}" ]; then echo "A release needs the upload."; exit 1; fi
+      # Release: the draft release v<version> (published by hand after the test) and the source release.
+      - name: GitHub releases
+        if: steps.release.outputs.release != ''
+        env:
+          REL: ${{ steps.release.outputs.release }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pacman -S --noconfirm --needed github-cli
+          name="$(basename "$(ls out/*.iso | head -n 1)")"
+          cp report/packages.tsv "/tmp/floppaos-${REL}-packages.tsv"
+          cp report/sources.tsv /tmp/sources.tsv
+          cp "out/${name}.sha256" "/tmp/${name}.sha256"
+          repo="${GITHUB_REPOSITORY}"
+          if ! gh release view "sources-${REL}" --repo "${repo}" > /dev/null 2>&1; then
+            printf '%s\n' \
+              "The complete source code of every package under a copyleft licence (GPL, LGPL, AGPL, MPL, EPL, CDDL, EUPL) in FloppaOS ${REL}." \
+              "" \
+              "One \`<package>-<version>.src.tar.gz\` per source package, made with Arch Linux's \`makepkg --allsource\` at the exact version in the image. \`SOURCES-INDEX.tsv\` lists them with size and SHA-256; \`sources.tsv\` lists every source package in the image. How to use them, and the written offer: [docs/source-code.md](https://github.com/${repo}/blob/v${REL}/docs/source-code.md)." \
+              > /tmp/sources-notes.md
+            gh release create "sources-${REL}" --repo "${repo}" --target "${GITHUB_SHA}" --prerelease --latest=false \
+              --title "Source code for FloppaOS ${REL}" --notes-file /tmp/sources-notes.md
+          fi
+          gh release upload "sources-${REL}" /tmp/sources.tsv --repo "${repo}" --clobber
+          if ! gh release view "v${REL}" --repo "${repo}" > /dev/null 2>&1; then
+            printf '%s\n' "Draft: notes come when the image has been tested (iso/README.md \"Releases\")." > /tmp/notes.md
+            gh release create "v${REL}" --repo "${repo}" --target "${GITHUB_SHA}" --draft --prerelease \
+              --title "FloppaOS ${REL}" --notes-file /tmp/notes.md
+          fi
+          gh release upload "v${REL}" "/tmp/${name}.sha256" "/tmp/floppaos-${REL}-packages.tsv" /tmp/sources.tsv --repo "${repo}" --clobber
       - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: iso-report
           path: report/
           retention-days: 14
+
+  # Release builds: archive the source code of every copyleft package into the release sources-<version>.
+  sources:
+    needs: iso
+    if: needs.iso.outputs.release != ''
+    permissions:
+      contents: write
+    uses: ./.github/workflows/sources.yml
+    with:
+      release: ${{ needs.iso.outputs.release }}

@@ -66,6 +66,8 @@ rm -f "${PROFILE}/airootfs/etc/systemd/system/multi-user.target.wants/sshd.servi
 install -Dm644 "${ROOT}/look/color-schemes/FloppaOSBlack.colors" "${PROFILE}/airootfs/root/.config/kdeglobals"
 
 # "Install FloppaOS" on the live desktop (same entry as in the start menu, from installer/).
+# Where the source code of every package in the image is, and the written offer (docs/source-code.md).
+install -Dm644 "${ROOT}/docs/source-code.md" "${PROFILE}/airootfs/usr/share/doc/floppaos/SOURCE-CODE.md"
 install -Dm644 "${ROOT}/installer/floppaos-install.desktop" "${PROFILE}/airootfs/home/floppa/Desktop/floppaos-install.desktop"
 # "FloppaOS PC check" next to it: what works on this PC, for trying FloppaOS from the USB stick on a real PC.
 install -Dm644 "${ROOT}/pc-check/floppaos-pc-check.desktop" "${PROFILE}/airootfs/home/floppa/Desktop/floppaos-pc-check.desktop"
@@ -103,6 +105,15 @@ sed -i \
   -e "s/^airootfs_image_tool_options=.*/airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '15' '-b' '1M')/" \
   "${PROFILE}/profiledef.sh"
 sed -i 's|^file_permissions=(|file_permissions=(\n  ["/home/floppa"]="1000:1000:750"\n  ["/home/floppa/Desktop"]="1000:1000:755"\n  ["/home/floppa/Desktop/floppaos-install.desktop"]="1000:1000:755"\n  ["/home/floppa/Desktop/floppaos-pc-check.desktop"]="1000:1000:755"\n  ["/etc/sudoers.d/floppa-live"]="0:0:440"\n  ["/usr/local/lib/floppaos/lsb-release"]="0:0:755"|' "${PROFILE}/profiledef.sh"
+
+# A release build (iso.yml with "release") is named after the version instead of the date:
+# floppaos-0.1.0-preview-x86_64.iso. It has to match the file VERSION.
+if [ -n "${FLOPPAOS_RELEASE:-}" ]; then
+  [[ ${FLOPPAOS_RELEASE} =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?$ ]] || { echo "Bad release version: ${FLOPPAOS_RELEASE}"; exit 1; }
+  [ "${FLOPPAOS_RELEASE}" = "$(cat "${ROOT}/VERSION")" ] || { echo "Release ${FLOPPAOS_RELEASE} does not match VERSION ($(cat "${ROOT}/VERSION"))"; exit 1; }
+  sed -i "s/^iso_version=.*/iso_version=\"${FLOPPAOS_RELEASE}\"/" "${PROFILE}/profiledef.sh"
+  grep -q "^iso_version=\"${FLOPPAOS_RELEASE}\"$" "${PROFILE}/profiledef.sh" || { echo "iso_version not set"; exit 1; }
+fi
 
 mkarchiso -v -r -w "${WORK}/work" -o "${OUT}" "${PROFILE}"
 ls -la "${OUT}"
